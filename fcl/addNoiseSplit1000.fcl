@@ -1,0 +1,27 @@
+# addNoiseSplit1000.fcl
+#
+# David Adams
+# January 2020
+#
+# Extend dataprep to add a splitter that splits data view "noise" into
+# regions with 1000 ticks and records then on view "splitnoise".
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+  , adcSplit
+]
+
+tools.adcSplit: {
+  tool_type: AdcChannelSplitter
+  LogLevel: 1
+  Length: 1000
+  DataPath: "noise"
+  DataView: "splitnoise"
+}
+
+# Display tools should use this output
+tools.pdchtp_Zplanes.DataView: "noise/splitnoise"
+tools.pdchtp_Cplanes.DataView: "noise/splitnoise"
+tools.pdchtp_Iplanes.DataView: "noise/splitnoise"
+
+chmet_DataView: "noise/splitnoise"

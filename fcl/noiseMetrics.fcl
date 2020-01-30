@@ -1,0 +1,131 @@
+# noiseMetrics.fcl
+#
+# David Adams
+# January 2020
+#
+# Tools to plot noise metrics.
+#
+# Before including this, define chmet_template, e.g.
+#   chmet_template: @local::chmet_pdtps_template
+#   chmet_template: @local::chmet_pdtpp_template
+
+############################### Metrics for the final data view. #######################################
+
+chmet_template.DataView: @local::chmet_DataView
+
+# Single sample RMS.
+tools.chmet_samRms: @local::chmet_template
+tools.chmet_samRms.Metric: samRms
+tools.chmet_samRms.MetricMax: 0.20
+tools.chmet_samRms.MetricLabel: "Sample RMS [ke/tick]"
+tools.chmet_samRms.HistName: "hsamRms%CRNAME%_run%0RUN%_%0EVENT%"
+tools.chmet_samRms.HistTitle: "Single-sample RMS for run %RUN% event %EVENT% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmet_samRms.PlotFileName: "chmet_samRms_%CRNAME%_run%0RUN%_evt%0EVENT%.png"
+
+# Single sample RMS summary.
+tools.chmetsum_samRms: @local::tools.chmet_samRms
+tools.chmetsum_samRms.HistName: "hsamRms%CRNAME%_run%0RUN%"
+tools.chmetsum_samRms.HistTitle: "Single-sample RMS for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmetsum_samRms.PlotFileName: "chmet_samRms_%CRNAME%_run%0RUN%.{png,tpad}"
+
+# 50-sample RMS.
+tools.chmet_samRms50: @local::chmet_template
+tools.chmet_samRms50.Metric: samRms50
+tools.chmet_samRms50.MetricMax: 3.00
+tools.chmet_samRms50.MetricLabel: "Integral RMS [ke/(50 tick)]"
+tools.chmet_samRms50.HistName: "hsamRms50%CRNAME%_run%0RUN%_%0EVENT%"
+tools.chmet_samRms50.HistTitle: "50-sample integral RMS for run %RUN% event %EVENT% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmet_samRms50.PlotFileName: "chmet_samRms50_%CRNAME%_run%0RUN%_evt%0EVENT%.png"
+
+# 50-sample RMS summary.
+tools.chmetsum_samRms50: @local::tools.chmet_samRms50
+tools.chmetsum_samRms50.HistName: "hsamRms50%CRNAME%_run%0RUN%"
+tools.chmetsum_samRms50.HistTitle: "50-sample integral RMS for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmetsum_samRms50.PlotFileName: "chmet_samRms50_%CRNAME%_run%0RUN%.{png,tpad}"
+
+# 40-sample RMS summary.
+tools.chmetsum_samRms40: @local::tools.chmet_samRms50
+tools.chmetsum_samRms40.HistName: "hsamRms50%CRNAME%_run%0RUN%"
+tools.chmetsum_samRms40.HistTitle: "40-sample integral RMS for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmetsum_samRms40.PlotFileName: "chmet_samRms40_%CRNAME%_run%0RUN%.{png,tpad}"
+
+############################### NSF (NoiseSignalFinder) metrics ########################################
+
+chmet_template.DataView: ""
+
+# Noise.
+tools.chmet_nsfNoise: @local::chmet_template
+tools.chmet_nsfNoise.Metric: nsfNoise
+tools.chmet_nsfNoise.MetricMax: 0.20
+tools.chmet_nsfNoise.MetricLabel: "Noise [ke/tick]"
+tools.chmet_nsfNoise.HistName: "hnsfNoise%CRNAME%_run%0RUN%_%0EVENT%"
+tools.chmet_nsfNoise.HistTitle: "NSF noise for run %RUN% event %EVENT% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmet_nsfNoise.PlotFileName: "chmet_nsfNoise_%CRNAME%_run%0RUN%_evt%0EVENT%.png"
+
+# Noise summary.
+tools.chmetsum_nsfNoise: @local::tools.chmet_nsfNoise
+tools.chmetsum_nsfNoise.HistName: "hnsfNoise%CRNAME%_run%0RUN%"
+tools.chmetsum_nsfNoise.HistTitle: "NSF noise for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmetsum_nsfNoise.PlotFileName: "chmet_nsfNoise_%CRNAME%_run%0RUN%.{png,tpad}"
+
+# Threshold.
+tools.chmet_nsfThreshold: @local::chmet_template
+tools.chmet_nsfThreshold.Metric: nsfThreshold
+tools.chmet_nsfThreshold.MetricMax: 1.0
+tools.chmet_nsfThreshold.MetricLabel: "Threshold [ke]"
+tools.chmet_nsfThreshold.HistName: "hnsfThreshold%CRNAME%_run%0RUN%_%0EVENT%"
+tools.chmet_nsfThreshold.HistTitle: "NSF threshold for run %RUN% event %EVENT% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmet_nsfThreshold.PlotFileName: "chmet_nsfThreshold_%CRNAME%_run%0RUN%_evt%0EVENT%.png"
+
+# Threshold summary.
+tools.chmetsum_nsfThreshold: @local::tools.chmet_nsfThreshold
+tools.chmetsum_nsfThreshold.HistName: "hnsfThreshold%CRNAME%_run%0RUN%"
+tools.chmetsum_nsfThreshold.HistTitle: "NSF threshold for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmetsum_nsfThreshold.PlotFileName: "chmet_nsfThreshold_%CRNAME%_run%0RUN%.{png,tpad}"
+
+# Signal fraction.
+tools.chmet_nsfSigFrac: @local::chmet_template
+tools.chmet_nsfSigFrac.Metric: nsfSigFrac
+tools.chmet_nsfSigFrac.MetricMax: 1.0
+tools.chmet_nsfSigFrac.MetricLabel: "Signal fraction"
+tools.chmet_nsfSigFrac.HistName: "hnsfSigFrac%CRNAME%_run%0RUN%_%0EVENT%"
+tools.chmet_nsfSigFrac.HistTitle: "NSF signal fraction for run %RUN% event %EVENT% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmet_nsfSigFrac.PlotFileName: "chmet_nsfSigFrac_%CRNAME%_run%0RUN%_evt%0EVENT%.png"
+
+# Signal fraction summary.
+tools.chmetsum_nsfSigFrac: @local::tools.chmet_nsfSigFrac
+tools.chmetsum_nsfSigFrac.HistName: "hnsfSigFrac%CRNAME%_run%0RUN%"
+tools.chmetsum_nsfSigFrac.HistTitle: "NSF signal fraction for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmetsum_nsfSigFrac.PlotFileName: "chmet_nsfSigFrac_%CRNAME%_run%0RUN%.{png,tpad}"
+
+# Loop count.
+tools.chmet_nsfLoopCount: @local::chmet_template
+tools.chmet_nsfLoopCount.Metric: nsfLoopCount
+tools.chmet_nsfLoopCount.MetricMax: 20.0
+tools.chmet_nsfLoopCount.MetricLabel: "Loop count"
+tools.chmet_nsfLoopCount.HistName: "hnsfLoopCount%CRNAME%_run%0RUN%_%0EVENT%"
+tools.chmet_nsfLoopCount.HistTitle: "NSF loop count for run %RUN% event %EVENT% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmet_nsfLoopCount.PlotFileName: "chmet_nsfLoopCount_%CRNAME%_run%0RUN%_evt%0EVENT%.png"
+
+# Loop count summary.
+tools.chmetsum_nsfLoopCount: @local::tools.chmet_nsfLoopCount
+tools.chmetsum_nsfLoopCount.HistName: "hnsfLoopCount%CRNAME%_run%0RUN%"
+tools.chmetsum_nsfLoopCount.HistTitle: "NSF loop count for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmetsum_nsfLoopCount.PlotFileName: "chmet_nsfLoopCount_%CRNAME%_run%0RUN%.{png,tpad}"
+
+# ROI count.
+tools.chmet_nsfRoiCount: @local::chmet_template
+tools.chmet_nsfRoiCount.Metric: nsfRoiCount
+tools.chmet_nsfRoiCount.MetricMax: 40.0
+tools.chmet_nsfRoiCount.HistName: "hnsfRoiCount%CRNAME%_run_%0RUN%_%0EVENT%"
+tools.chmet_nsfRoiCount.HistTitle: "NSF ROI count for run %RUN% event %EVENT% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmet_nsfRoiCount.MetricLabel: "ROI count"
+tools.chmet_nsfRoiCount.PlotFileName: "chmet_nsfRoiCount_%CRNAME%_run%0RUN%_evt%0EVENT%.png"
+
+# ROI count summary.
+tools.chmetsum_nsfRoiCount: @local::tools.chmet_nsfRoiCount
+tools.chmetsum_nsfRoiCount.HistName: "hnsfRoiCount%CRNAME%_run%0RUN%"
+tools.chmetsum_nsfRoiCount.HistTitle: "NSF ROI count for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.chmetsum_nsfRoiCount.PlotFileName: "chmet_nsfRoiCount_%CRNAME%_run%0RUN%.{png,tpad}"
+
+chmet_template: @erase

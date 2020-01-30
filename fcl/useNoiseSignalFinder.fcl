@@ -1,0 +1,3 @@
+tools.pedmetSignalFinderAdc: @local::tools.noiseSignalFinderAdc
+tools.pedmetSignalFinderKe:  @local::tools.noiseSignalFinderKe
+

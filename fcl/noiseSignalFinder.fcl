@@ -1,0 +1,27 @@
+# noiseSignalFinder.fcl
+#
+# David Adams
+# January 2020
+#
+# Signal finder for use in noise studies.
+# AdcChannelMetric.
+#
+# The goal is to find as many energy deposits as possible
+# withpout including any noise.
+
+tools.noiseSignalFinderKe: {
+  tool_type: AdcNoiseSignalFinder
+  LogLevel: 1
+  SigFracMax: 0.80
+  ThresholdMin: 0.300
+  ThresholdRatio: 5.0
+  ThresholdRatioTol: 0.1
+  MaxLoop: 20.0
+  BinsBefore: 10
+  BinsAfter: 20
+  FlagPositive: true
+  FlagNegative: true
+}
+
+tools.noiseSignalFinderAdc: @local::tools.noiseSignalFinderKe
+tools.noiseSignalFinderAdc.ThresholdMin: 12.0

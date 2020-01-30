@@ -1,0 +1,9 @@
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+  , adcKeepAllSignalFinder        # Keep all ticks
+  , pdsp_setSampleLength
+  , adcFFT
+  , adcPlotDftTickPowerLog
+]
+
+#include "dftPlotApasByView.fcl"

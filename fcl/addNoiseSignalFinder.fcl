@@ -1,0 +1,6 @@
+#include "noiseSignalFinder.fcl"
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+  , noiseSignalFinderKe
+]

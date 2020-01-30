@@ -1,0 +1,28 @@
+# addRoiSlicer.fcl
+#
+# David Adams
+# January 2020
+#
+# Extend dataprep to add the noise signal finder and then save ROI regions
+# to data view "roi". This is the converse of adcNoiseSlicer.
+
+#include "noiseSignalFinder.fcl"
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+  , noiseSignalFinderKe
+  , roiSlicer
+]
+
+tools.roiSlicer: {
+  tool_type: AdcRoiSlicer
+  LogLevel: 1
+  OutViewName: "roi"
+  SliceOpt: 1
+  CopyRaw: false
+}
+
+# Display tools should look this output
+tools.pdchtp_Zplanes.DataView: "roi"
+tools.pdchtp_Cplanes.DataView: "roi"
+tools.pdchtp_Iplanes.DataView: "roi"

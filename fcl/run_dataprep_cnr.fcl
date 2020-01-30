@@ -1,0 +1,15 @@
+# run_dataprep_cnr.fcl
+#
+# David Adams
+# January 2020
+#
+# Run dataprep through tail removal, i.e. no CNR,
+
+#include "run_dataprep_tai.fcl"
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+  , "pdsp_noiseRemovalKe"        # Remove high frequency noise and coherent noise
+
+]
+

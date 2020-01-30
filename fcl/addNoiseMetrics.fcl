@@ -1,0 +1,14 @@
+#include "noiseMetrics.fcl"
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+  , chmetsum_nsfNoise
+  , chmetsum_nsfThreshold
+  , chmetsum_nsfSigFrac
+  , chmetsum_nsfLoopCount
+  , chmetsum_nsfRoiCount
+  , chmetsum_nsfNoise
+  , chmetsum_samRms
+  , chmetsum_samRms50
+]
+

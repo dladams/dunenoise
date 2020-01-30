@@ -1,0 +1,19 @@
+# chmet_template_tpp.fcl
+#
+# David Adams
+# January 2020
+#
+# Channel metric tool template with plots for each APA plane.
+
+chmet_template: @local::pdtps_template
+chmet_template.ChannelRanges: [tpp0u, tpp1u, tpp2u, tpp3u, tpp4u, tpp5u,
+                               tpp0v, tpp1v, tpp2v, tpp3v, tpp4v, tpp5v,
+                               tpp0z, tpp1z, tpp2z, tpp3z, tpp4z, tpp5z,
+                               tpp0c, tpp1c, tpp2c, tpp3c, tpp4c, tpp5c]
+chmet_template.ChannelLineModulus: 2560
+chmet_template.ChannelLinePattern: [        40,   80,  120,  160,  200,  240,  280,  320,  360,
+                                     400,  440,  480,  520,  560,  600,  640,  680,  720,  760,
+                                     800,  840,  880,  920,  960, 1000, 1040, 1080, 1120, 1160,
+                                    1200, 1240, 1280, 1320, 1360, 1400, 1440, 1480, 1520, 1560,
+                                    1600, 1648, 1696, 1744, 1792, 1840, 1888, 1936, 1984, 2032,
+                                    2128, 2176, 2224, 2272, 2320, 2368, 2416, 2464, 2512]

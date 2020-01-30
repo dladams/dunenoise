@@ -1,0 +1,12 @@
+# taiNoisePlots.fcl
+#
+# David Adams
+# January 2020
+#
+# Create noise plots after tail removal.
+
+#include "run_dataprep_cnr.fcl"
+#include "addNoiseSlicer.fcl"
+#include "addNoiseSumMetrics.fcl"
+#include "addNoiseSplit1000.fcl"
+#include "addDftPlots.fcl"

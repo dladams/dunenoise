@@ -1,0 +1,11 @@
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+  , adcKeepAllSignalFinder        # Keep all ticks
+  , adcFFT
+  , adcPlotDftTickPowerLog
+]
+
+#include "dftPlotApasByView.fcl"
+
+tools.adcFFT.DataView: @local::chmet_DataView
+tools.adcPlotDftTickPowerLog.PlotDataView: @local::chmet_DataView

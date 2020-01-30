@@ -1,0 +1,58 @@
+# pedmetNotSignalCniSum.fcl
+#
+# David Adams
+# July 2019
+#
+# Make summary plots of signal fraction and not-signal sample RMS vs. channel.
+#
+# ADC response is uncalilbrated (i.e. at ADC scale).
+# Applies
+#   Sticky code mitigation
+#   ADC tail removal
+#   correlated noise subtraction with internal ROI finding
+
+#include "run_dataprep.fcl"
+#include "pedmetSignalFinder.fcl"
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  "digitReader",
+  "pd_adcPedestalFit",
+  "adcSampleCalibration",       # Subtract pedestal, apply ke calibration
+  "pdsp_sticky_codes_ped",      # Flag sticky codes
+  "pdsp_adcMitigate",           # Mitigate sticky codes
+  "adcTailRemovalKe",           # Remove tails
+  "pdsp_noiseRemovalKe",        # Remove correlated noise
+  "pedmetSignalFinderKe",       # Find signal
+  "pdtps_adcChannelSignalFractionPlotter",
+  "pdtps_adcChannelNotSignalCniRmsPlotter",
+  "pdtps_adcChannelNotSignalCniRms50Plotter"
+]
+
+tools.pdtps_adcChannelSignalFractionPlotter: @local::tools.pdtps_adcChannelPedestalNoisePlotter
+tools.pdtps_adcChannelSignalFractionPlotter.Metric: "sigFrac"
+tools.pdtps_adcChannelSignalFractionPlotter.MetricMax: 0.25
+tools.pdtps_adcChannelSignalFractionPlotter.MetricLabel: "Signal fraction"
+tools.pdtps_adcChannelSignalFractionPlotter.HistName: "hchsigfraccor%CRNAME%_ped_%0RUN%"
+tools.pdtps_adcChannelSignalFractionPlotter.HistTitle: "Tail-corrected signal fraction for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.pdtps_adcChannelSignalFractionPlotter.PlotFileName: "chmet_sigfraccor_%CRNAME%_run%0RUN%.png"
+tools.pdtps_adcChannelSignalFractionPlotter.RootFileName: "pedmets_%CRNAME%.root"
+
+tools.pdtps_adcChannelNotSignalCniRmsPlotter: @local::tools.pdtps_adcChannelPedestalNoisePlotter
+tools.pdtps_adcChannelNotSignalCniRmsPlotter.Metric: "nsgRms"
+tools.pdtps_adcChannelNotSignalCniRmsPlotter.MetricMax: 0.35
+tools.pdtps_adcChannelNotSignalCniRmsPlotter.MetricLabel: "Sample RMS [ke]"
+tools.pdtps_adcChannelNotSignalCniRmsPlotter.HistName: "hchnsgcnirms%CRNAME%_ped_%0RUN%"
+tools.pdtps_adcChannelNotSignalCniRmsPlotter.HistTitle: "CNI not-signal sample RMS for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.pdtps_adcChannelNotSignalCniRmsPlotter.PlotFileName: "chmet_nsgcnirms_%CRNAME%_run%0RUN%.png"
+tools.pdtps_adcChannelNotSignalCniRmsPlotter.RootFileName: "pedmets_%CRNAME%.root"
+
+tools.pdtps_adcChannelNotSignalCniRms50Plotter: @local::tools.pdtps_adcChannelPedestalNoisePlotter
+tools.pdtps_adcChannelNotSignalCniRms50Plotter.Metric: "nsgRms50"
+tools.pdtps_adcChannelNotSignalCniRms50Plotter.MetricLabel: "50-sample RMS [ke]"
+tools.pdtps_adcChannelNotSignalCniRms50Plotter.MetricMax: 5.0
+tools.pdtps_adcChannelNotSignalCniRms50Plotter.MetricSummaryView: "rms:drms"
+tools.pdtps_adcChannelNotSignalCniRms50Plotter.HistName: "hchnsgcnirms50%CRNAME%_ped_%0RUN%"
+tools.pdtps_adcChannelNotSignalCniRms50Plotter.HistTitle: "CNI not-signal 50-sample RMS for run %RUN% %CRLABEL% (%CRLABEL2%: %CRLABEL1%)"
+tools.pdtps_adcChannelNotSignalCniRms50Plotter.PlotFileName: "chmet_nsgcnirms50_%CRNAME%_run%0RUN%.png"
+tools.pdtps_adcChannelNotSignalCniRms50Plotter.RootFileName: "pedmets_%CRNAME%.root"
+
