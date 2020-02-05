@@ -16,12 +16,12 @@ tools.adcPlotDftTickPowerLog.PlotSplitY: 2
 tools.adcPlotDftTickPowerLog.NBinX: 51
 tools.adcPlotDftTickPowerLog.XMin: -19.99
 tools.adcPlotDftTickPowerLog.XMax: 1000.01
-tools.adcPlotDftTickPowerLog.YMinLog: 1.0e-7
-tools.adcPlotDftTickPowerLog.YMax: 0.5
+tools.adcPlotDftTickPowerLog.YMinLog: 1.0e-5
+tools.adcPlotDftTickPowerLog.YMax: 0.005
 tools.adcPlotDftTickPowerLog.HistTitle:         "DFT power for run %RUN% event %EVENT% %CRNAME%"
 tools.adcPlotDftTickPowerLog.HistSummaryTitles:["DFT power for run %RUN%", "DFT power for run %RUN% event %EVENT%"]
 tools.adcPlotDftTickPowerLog.PlotName:          ""
-tools.adcPlotDftTickPowerLog.PlotSummaryNames: ["dftpowtlog_run%0RUN%.{png,tpad}", "dftpowtlog_run%0RUN%.{png,tpad}"]
+tools.adcPlotDftTickPowerLog.PlotSummaryNames: ["dftpowtlog_run%0RUN%.{png,tpad}", ""]
 
 # To make plots for each event.
-#tools.adcPlotDftTickPowerLog.PlotName:          "view_dftpowtlog_run%0RUN%_evt%EVENT%_%CRNAME%.png"
+#tools.adcPlotDftTickPowerLog.PlotSummaryNames: ["dftpowtlog_run%0RUN%.{png,tpad}", "dftpowtlog_run%0RUN%_evt%EVENT%.{png,tpad}"]

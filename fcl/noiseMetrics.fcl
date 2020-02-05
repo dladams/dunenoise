@@ -6,7 +6,7 @@
 # Tools to plot noise metrics.
 #
 # Before including this, define chmet_template, e.g.
-#   chmet_template: @local::chmet_pdtps_template
+#   chmet_template: @local::chmet_pdapa_template
 #   chmet_template: @local::chmet_pdtpp_template
 
 ############################### Metrics for the final data view. #######################################

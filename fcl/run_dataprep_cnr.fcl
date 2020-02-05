@@ -9,7 +9,7 @@
 
 services.RawDigitPrepService.AdcChannelToolNames: [
   @sequence::services.RawDigitPrepService.AdcChannelToolNames
-  , "pdsp_noiseRemovalKe"        # Remove high frequency noise and coherent noise
+  , "pdsp_fembNoiseRemovalKe"        # Remove high frequency noise and coherent noise
 
 ]
 

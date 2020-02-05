@@ -1,0 +1,34 @@
+#!/bin/sh
+
+RUN=$1
+YLMIN=$2
+YLMAX=$3
+CONFILE=$4
+if [ -z "$YLMIN" -o "$YLMIN" = "." ]; then YLMIN=0.00001; fi
+if [ -z "$YLMAX" -o "$YLMAX" = "." ]; then YLMAX=0.004; fi
+if [ -z "$CONFILE" ]; then CONFILE=setupPlots.sh; fi
+  
+SLAB='After tail removal:,After CNR:'
+SLAB=
+if [ -z "$RUN" ]; then
+  RUN=5240
+fi
+SFRUN=$RUN
+unset RUNDIR
+unset OUTPRE
+if [ ! -r $CONFILE ]; then
+  echo Please create $CONFILE
+  exit 1
+fi
+source ./$CONFILE
+if [ -z "$RUNDIR" ]; then
+  echo Please define RUNDIR, e.g. in setupPlots.sh
+  exit 2
+fi
+if [ -z "$OUTPRE" ]; then
+  echo Please define OUTPRER, e.g. in setupPlots.sh
+  exit 2
+fi
+while [ ${#SFRUN} -lt 6 ]; do SFRUN=0$SFRUN; done
+JOBDIR="$RUNDIR/run${SFRUN}evts000000-000200"
+root.exe -b -q '$DUNENOISE_DIR/root/mergeDftPlanes.C("'$JOBDIR'", "'$OUTPRE'", "tai,cnr", "'$RUN'", "'$SLAB'", '$YLMIN', '$YLMAX')'

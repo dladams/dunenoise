@@ -7,7 +7,6 @@ services.RawDigitPrepService.AdcChannelToolNames: [
   , chmetsum_nsfSigFrac
   , chmetsum_nsfLoopCount
   , chmetsum_nsfRoiCount
-  , chmetsum_nsfNoise
   , chmetsum_samRms
   , chmetsum_samRms50
 ]

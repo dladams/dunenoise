@@ -1,0 +1,9 @@
+# cnrSignalPlots.fcl 
+#
+# David Adams
+# February 2020
+#
+# Create DFT plots including signal after tail removal.
+
+#include "run_dataprep_cnr.fcl"
+#include "addDftPlots.fcl"

@@ -1,0 +1,25 @@
+#!/bin/sh
+
+#SFRUN=005726
+SFRUN=$1
+if [ -z "$SFRUN" ]; then SFRUN=5240; fi
+SFEVTS=$2
+if [ -z "$SFEVTS" ]; then SFEVTS=000000-000200; fi
+unset RUNDIR
+unset OUTPRE
+if [ ! -r setupPlots.sh ]; then
+  echo Please create setupPlots.sh
+  exit 1
+fi
+source ./setupPlots.sh
+if [ -z "$RUNDIR" ]; then
+  echo Please define RUNDIR, e.g. in setupPlots.sh
+  exit 2
+fi
+if [ -z "$OUTPRE" ]; then
+  echo Please define OUTPRER, e.g. in setupPlots.sh
+  exit 2
+fi
+SPRINT="png,pdf"
+SFRUN=00$SFRUN
+root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseHisto.C("'$RUNDIR'", "'$OUTPRE'", "tai:2000,tai-50:1100,cnr:3000,cnr-50:2500"   , "'$SFRUN'", "'$SFEVTS'", "zcGood-uvGood", "'$SPRINT'")'

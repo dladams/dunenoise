@@ -18,9 +18,11 @@ services.RawDigitPrepService.AdcChannelToolNames: [
 ]
 
 # Template for channel metric plots.
-#   pdtps = one plot for each TPC set (APA)
+#   pdtps = one plot for each TPC set (offline APA)
+#   pdapa = one plot for each APA
 #   pdtpp = one plot for each TPC plane
-chmet_template: @local::chmet_pdtpp_template
+chmet_template: @local::chmet_pdapa_template
 
-# This is the data view to be used for channel metrics.
+# Data view and channel ranges to use for channel metrics.
 chmet_DataView: ""
+
