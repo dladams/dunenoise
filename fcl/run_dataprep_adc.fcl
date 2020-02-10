@@ -1,0 +1,25 @@
+# run_dataprep_adc.fcl
+#
+# David Adams
+# February 2020
+#
+# Run dataprep to fill samples with ADC - pedesatal.
+
+#include "run_dataprep.fcl"
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  "digitReader"                  # Read RawDigit
+  , "pdsp_sticky_codes_ped"      # Flag sticky codes
+  , "pd_adcPedestalFit"          # Find pedestal
+  , "adcSampleFiller"            # Subtract pedestal and apply charge calibration
+]
+
+# Template for channel metric plots.
+#   pdtps = one plot for each TPC set (offline APA)
+#   pdapa = one plot for each APA
+#   pdtpp = one plot for each TPC plane
+chmet_template: @local::chmet_pdapa_template
+
+# Data view and channel ranges to use for channel metrics.
+chmet_DataView: ""
+
