@@ -17,8 +17,8 @@ tools.noiseSignalFinderKe: {
   ThresholdRatio: 5.0
   ThresholdRatioTol: 0.1
   MaxLoop: 20.0
-  BinsBefore: 10
-  BinsAfter: 20
+  BinsBefore: 30
+  BinsAfter: 50
   FlagPositive: true
   FlagNegative: true
 }

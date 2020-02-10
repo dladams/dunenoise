@@ -2,7 +2,12 @@
 
 #SFRUN=005726
 SFRUN=$1
-if [ -z "$SFRUN" ]; then SFRUN=5240; fi
+if [ -z "$SFRUN" ]; then
+  echo Usage: $0 RUN [SFEVTS]
+  echo "  e.g. $0 5240 000000-000200"
+  echo "  In/out directories taken from setupPlots.sh"
+  exit 0
+fi
 SFEVTS=$2
 if [ -z "$SFEVTS" ]; then SFEVTS=000000-000200; fi
 unset RUNDIR
@@ -20,6 +25,8 @@ if [ -z "$OUTPRE" ]; then
   echo Please define OUTPRER, e.g. in setupPlots.sh
   exit 2
 fi
-SPRINT="png,pdf"
+echo RUNDIR: $RUNDIR
+echo OUTPRE: $OUTPRE
+SPRINT="png,pdf,tpad"
 SFRUN=00$SFRUN
 root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseHisto.C("'$RUNDIR'", "'$OUTPRE'", "tai:2000,tai-50:1100,cnr:3000,cnr-50:2500"   , "'$SFRUN'", "'$SFEVTS'", "zcGood-uvGood", "'$SPRINT'")'

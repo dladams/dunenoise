@@ -168,6 +168,8 @@ int fillFromTps(string jobsuf, const NoiseSpecifier& nspec, string sfrun, string
 // Create a pad for one pair of histograms.
 int plotNoiseHisto(string jobsuf, string sspec, float ymaxin, string sfrun, string sfevts, string dopt, TPadManipulator* pman) {
   string myname = "drawNoiseHisto: ";
+  bool titleAsLabel = true;
+  bool biglabs = true;
   NoiseSpecifier nspec(sspec);
   int itpss[6] = {0, 1, 2, 3, 4, 5};
   HistMap hsts;
@@ -231,9 +233,11 @@ int plotNoiseHisto(string jobsuf, string sspec, float ymaxin, string sfrun, stri
   }
   string sttlSuf;
   if ( nspec.sreco == "cor" ) sttlSuf = " without CNR";
+  if ( nspec.sreco == "tai" ) sttlSuf = " w/o CNR";
   if ( nspec.sreco == "cni" ) sttlSuf = " with CNR";
   if ( nspec.sreco == "cnr" ) sttlSuf = " with CNR";
-  string sttlSum = "TPC " + sntype + " noise" + sttlSuf;
+  string sttlSum = sntype + " noise" + sttlSuf;
+  sttlSum[0] = toupper(sttlSum[0]);
   int lineWidth = 2;
   for ( string hnam : hnams ) {
     string sttl = "TPC " + sntype + " noise for " + descs[hnam] + " channels" + sttlSuf;
@@ -296,15 +300,28 @@ int plotNoiseHisto(string jobsuf, string sspec, float ymaxin, string sfrun, stri
   }
   // Create labels.
   vector<TLatex*> labs;
-  double xlab = 0.65;
+  double xlab = 0.55;
   double ylab = 0.35;
   double dylab = 0.06;
   labs.push_back(new TLatex(xlab, ylab, "#bf{ProtoDUNE-SP}"));
+  ylab -= dylab;
+  if ( titleAsLabel ) {
+    labs.push_back(new TLatex(xlab, ylab, sttlSum.c_str()));
+    sttlSum = "";
+    ylab -= dylab;
+  }
   string slab = sfrun;
   while ( slab.size() && slab[0] == '0' ) slab = slab.substr(1);
   slab = "Run " + slab;
-  ylab -= dylab;
   labs.push_back(new TLatex(xlab, ylab, slab.c_str()));
+  // Set margins and label sizes.
+  if ( sttlSum.size() == 0 ) pman->setMarginTop(0.05);
+  if ( biglabs ) {
+    pman->setLabelSizeX(0.05);
+    pman->setLabelSizeY(0.05);
+    pman->setMarginLeft(0.13);
+    pman->setMarginBottom(0.12);
+  }
 
   // Draw.
   if ( doMan ) {
