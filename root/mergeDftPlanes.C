@@ -74,7 +74,7 @@ void mergeDftPlanes(string jobdir, string outpre,
       ph->SetLineColor(icol);
       ph->Print();
       if ( nprc == 2 && iprc == 0 ) {
-        ph->SetLineStyle(2);
+        //ph->SetLineStyle(2);
         ph->SetLineWidth(3);
       }
       TPadManipulator* poman = omantop.man(iman);
