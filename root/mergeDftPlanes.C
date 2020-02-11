@@ -7,22 +7,27 @@ bool widescale() { return  false; }
 // slabin - labe prefixes for the PROCs, e.g. "After tail removal:,After CNR:"
 // ylogmin - Min value for y-axis in log plot, e.g. 1.e-5
 // ylogmax - Max value for y-axis in log plot, e.g. 0.004
+// ylinmax - Max value for y-axis in linear plot, e.g. 0.0024
 void mergeDftPlanes(string jobdir, string outpre,
                     string sprcin, string srun, string slabin,
-                    double ylogmin, double ylogmax) {
+                    double ylogmin, double ylogmax, double ylinmax) {
   string myname = "mergeplanes: ";
+  bool useescale = ylinmax > 1.0;
+  bool biglabs = true;
+  bool showtitle = false;
   StringManipulator smprcs(sprcin, false);
   StringManipulator::StringVector sprcs = smprcs.split(",");
   int nprc = sprcs.size();
   cout << myname << "Process count is " << nprc << endl;
-  if ( slabin.size() == 0 ) slabin = "After tail removal:,After CNR:";
+  //if ( slabin.size() == 0 ) slabin = "After tail removal:,After CNR:";
+  if ( slabin.size() == 0 ) slabin = "W/o CNR:,With CNR:";
   StringManipulator smlabs(slabin, false);
   StringManipulator::StringVector slabs = smlabs.split(",");
   int nlab = slabs.size();
   cout << myname << "Process label count is " << nlab << endl;
   TPadManipulator omantop(1400, 1000);
   omantop.split(2,2);
-  double xlmin = 0.45;
+  double xlmin = 0.58;
   double xlmax = 0.93;
   double ylmax = 0.88;
   double ylmin = ylmax - 0.07*(nprc+0.5);
@@ -30,6 +35,7 @@ void mergeDftPlanes(string jobdir, string outpre,
   string sprclab;
   //double ymax[4] = {0.002, 0.008, 0.15, 0.008};
   double ymax[4] = {0.0024, 0.0024, 0.0024, 0.0024};
+  if ( ylinmax > 0.0 ) for ( double& ymaxval : ymax ) ymaxval = ylinmax;
   vector<string> padlabs = {"C wires", "U wires", "Z wires", "V wires"};
   for ( int iprc=0; iprc<nprc; ++iprc ) {
     string sprc = sprcs[iprc];
@@ -48,7 +54,11 @@ void mergeDftPlanes(string jobdir, string outpre,
     for ( int iman=0; iman<4; ++iman ) {
       TPadManipulator* pman = pmantop->man(iman);
       TH1* ph = (TH1*) pman->hist()->Clone();
-      ph->GetYaxis()->SetTitle("Power/tick [(ke)^{2}/(20 kHz)]");
+      if ( useescale ) {
+        ph->GetYaxis()->SetTitle("Power/tick/channel [e^{2}/(20 kHz)]");
+      } else {
+        ph->GetYaxis()->SetTitle("Power/tick/channel [(ke)^{2}/(20 kHz)]");
+      }
       int nobj = pman->objects().size();
       int nhst = 1;
       string sttl = pman->getTitle();
@@ -59,9 +69,14 @@ void mergeDftPlanes(string jobdir, string outpre,
         ++nhst;
       }
       float sfac = 1.0/nhst;
+      if ( useescale ) sfac *= 1.e6;
       ph->Scale(sfac);
       ph->SetLineColor(icol);
       ph->Print();
+      if ( nprc == 2 && iprc == 0 ) {
+        ph->SetLineStyle(2);
+        ph->SetLineWidth(3);
+      }
       TPadManipulator* poman = omantop.man(iman);
       poman->centerAxisTitles();
       poman->add(ph, dopt);
@@ -79,7 +94,12 @@ void mergeDftPlanes(string jobdir, string outpre,
         poman->setLogRangeY(ylogmin, ylogmax);
         poman->addAxis();
         //poman->setGrid();
-        poman->setTitle("DFT power");
+        if ( showtitle ) {
+          poman->setTitle("DFT power");
+        } else {
+          poman->setTitle("");
+          poman->setMarginTop(0.05);
+        }
         double xlab = 0.65;
         if ( widescale() ) xlab = 0.70;
         TLatex* ptxt = new TLatex(xlab, ytxt, "#bf{ProtoDUNE-SP}");
@@ -98,8 +118,15 @@ void mergeDftPlanes(string jobdir, string outpre,
         ptxt->SetTextFont(42);
         poman->add(ptxt);
       }
+      // Set margins.
+      if ( biglabs ) {
+        poman->setLabelSizeX(0.05);
+        poman->setLabelSizeY(0.05);
+        poman->setMarginLeft(0.14);
+        poman->setMarginBottom(0.12);
+      }
       TLegend* pleg = poman->getLegend();
-      pleg->SetMargin(0.10);  // Fraction used for symbol
+      pleg->SetMargin(0.12);  // Fraction used for symbol
       if ( pleg == nullptr ) {
         cout << myname << "ERROR: Legend not found." << endl;
       } else {
@@ -111,23 +138,25 @@ void mergeDftPlanes(string jobdir, string outpre,
         double powrms = sqrt(powsum);
         ostringstream sspow;
         sspow.precision(0);
-        sspow << "#sqrt{#Sigma} = " << fixed << 1000.0*powrms << " e";
+        if ( ! useescale ) powrms *= 1000;
+        sspow << "#sqrt{#Sigma} = " << fixed << powrms << " e";
         slab += " " + sspow.str();
         pleg->AddEntry(pho, slab.c_str(), "l");
       }
     }
   }
-  string sofnam = outpre + "dftmergelog_" + sprclab + "_run" + srun + ".{png,pdf}";
+  string ssuf = ".{png,pdf,tpad}";
+  string sofnam = outpre + "dftmergelog_" + sprclab + "_run" + srun + ssuf;
   cout << myname << "Printing " << sofnam << endl;
   omantop.print(sofnam);
   for ( int iman=0; iman<4; ++iman ) {
     TPadManipulator* pman = omantop.man(iman);
     pman->setLogY(false);
-    pman->setMarginLeft(0.12);
+    if ( ! biglabs ) pman->setMarginLeft(0.12);
     //TH1* phframe = pman->frameHist();
     //cout << "Frame X title: " << phframe->GetXaxis()->GetTitle() << endl;
   }
-  sofnam = outpre + "dftmergelin_" + sprclab + "_run" + srun + ".{png,pdf}";
+  sofnam = outpre + "dftmergelin_" + sprclab + "_run" + srun + ssuf;
   omantop.update();
   cout << myname << "Printing " << sofnam << endl;
   omantop.print(sofnam);

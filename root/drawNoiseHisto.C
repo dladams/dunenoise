@@ -301,7 +301,7 @@ int plotNoiseHisto(string jobsuf, string sspec, float ymaxin, string sfrun, stri
   // Create labels.
   vector<TLatex*> labs;
   double xlab = 0.55;
-  double ylab = 0.35;
+  double ylab = 0.45;
   double dylab = 0.06;
   labs.push_back(new TLatex(xlab, ylab, "#bf{ProtoDUNE-SP}"));
   ylab -= dylab;
