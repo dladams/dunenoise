@@ -8,12 +8,12 @@
 #
 # ADC response is calilbrated (i.e. at ke scale).
 #   correlated noise subtraction with internal ROI finding
-# Specify the signal finder with
-#   tools.pedmetSignalFinderKe: ...
+#
+# A signal finder (e.g. pedmetNoiseSignalFinderIb3) must be added to the
+# dataprep sequence before this configuration is included.
 
 services.RawDigitPrepService.AdcChannelToolNames: [
   @sequence::services.RawDigitPrepService.AdcChannelToolNames,
-  "pedmetSignalFinderKe",       # Find signal
   "ibmet_adcChannelSignalFractionPlotter",
   "ibmet_adcChannelNotSignalRmsPlotter",
   "ibmet_adcChannelNotSignalRms50Plotter"
