@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# dunenoise-help
+#
+# David Adams
+# January 2020
+#
+echo
+echo dunenoise supports protoDUNE noise analysis
+echo
+echo Author: David Adams
+echo Repository: https://github.com/dladams/dunenoise
+echo
+echo Commands:
+echo "dunenoiseHelp - Help using dunenoise (this file)"

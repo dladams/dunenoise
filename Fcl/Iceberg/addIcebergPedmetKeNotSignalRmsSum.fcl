@@ -1,0 +1,49 @@
+# addIcebergPedmetKeNotSignalRmsSum.fcl
+#
+# David Adams
+# April 2020
+#
+# Add summary plots of signal fraction and not-signal sample RMS vs. channel
+# for Iceberg.
+#
+# ADC response is calilbrated (i.e. at ke scale).
+#   correlated noise subtraction with internal ROI finding
+# Specify the signal finder with
+#   tools.pedmetSignalFinderKe: ...
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+  "pedmetSignalFinderKe",       # Find signal
+  "ibmet_adcChannelSignalFractionPlotter",
+  "ibmet_adcChannelNotSignalRmsPlotter",
+  "ibmet_adcChannelNotSignalRms50Plotter"
+]
+
+tools.ibmet_adcChannelSignalFractionPlotter: @local::tools.ibmet_adcChannelPedestalNoisePlotter
+tools.ibmet_adcChannelSignalFractionPlotter.Metric: "sigFrac"
+tools.ibmet_adcChannelSignalFractionPlotter.MetricMax: 0.25
+tools.ibmet_adcChannelSignalFractionPlotter.MetricLabel: "Signal fraction"
+tools.ibmet_adcChannelSignalFractionPlotter.HistName: "hchsigfraccor%CRNAME%_ped_%0RUN%"
+tools.ibmet_adcChannelSignalFractionPlotter.HistTitle: "Tail-corrected signal fraction for run %RUN% %CRLABEL%"
+tools.ibmet_adcChannelSignalFractionPlotter.PlotFileName: "chmet_sigfraccor_%CRNAME%_run%0RUN%.png"
+tools.ibmet_adcChannelSignalFractionPlotter.RootFileName: "pedmets_%CRNAME%.root"
+
+tools.ibmet_adcChannelNotSignalRmsPlotter: @local::tools.ibmet_adcChannelPedestalNoisePlotter
+tools.ibmet_adcChannelNotSignalRmsPlotter.Metric: "nsgRms"
+tools.ibmet_adcChannelNotSignalRmsPlotter.MetricMax: 0.35
+tools.ibmet_adcChannelNotSignalRmsPlotter.MetricLabel: "Sample RMS [ke]"
+tools.ibmet_adcChannelNotSignalRmsPlotter.HistName: "hchnsgrms%CRNAME%_ped_%0RUN%"
+tools.ibmet_adcChannelNotSignalRmsPlotter.HistTitle: "Not-signal sample RMS for run %RUN% %CRLABEL%"
+tools.ibmet_adcChannelNotSignalRmsPlotter.PlotFileName: "chmet_nsgrms_%CRNAME%_run%0RUN%.png"
+tools.ibmet_adcChannelNotSignalRmsPlotter.RootFileName: "pedmets_%CRNAME%.root"
+
+tools.ibmet_adcChannelNotSignalRms50Plotter: @local::tools.ibmet_adcChannelPedestalNoisePlotter
+tools.ibmet_adcChannelNotSignalRms50Plotter.Metric: "nsgRms50"
+tools.ibmet_adcChannelNotSignalRms50Plotter.MetricLabel: "50-sample RMS [ke]"
+tools.ibmet_adcChannelNotSignalRms50Plotter.MetricMax: 5.0
+tools.ibmet_adcChannelNotSignalRms50Plotter.MetricSummaryView: "rms:drms"
+tools.ibmet_adcChannelNotSignalRms50Plotter.HistName: "hchnsgrms50%CRNAME%_ped_%0RUN%"
+tools.ibmet_adcChannelNotSignalRms50Plotter.HistTitle: "Not-signal 50-sample RMS for run %RUN% %CRLABEL%"
+tools.ibmet_adcChannelNotSignalRms50Plotter.PlotFileName: "chmet_nsgrms50_%CRNAME%_run%0RUN%.png"
+tools.ibmet_adcChannelNotSignalRms50Plotter.RootFileName: "pedmets_%CRNAME%.root"
+

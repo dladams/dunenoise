@@ -1,0 +1,19 @@
+# addNsfThreshKePlotter.fcl
+#
+# David Adams
+# May 2020
+#
+# Add the protoDUNE  metric plots for the noise signal finder at ke scale.
+
+tools.pdtps_nsfThresh.MetricMax: 2.5
+tools.pdtps_nsfThresh.MetricLabel: "Threshold [ke]"
+tools.pdtps_nsfNoise.MetricMax: 0.5
+tools.pdtps_nsfNoise.MetricLabel: "Noise [ke/tick]"
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+  pdtps_nsfThresh,
+  pdtps_nsfNoise,
+  pdtps_nsfSigFrac
+]
+

@@ -1,0 +1,14 @@
+# addIbNsfMetricPlots.fcl
+#
+# David Adams
+# May 2020
+#
+# Add the Iceberg metric plots for the noise signal finder at ke scale.
+
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+  ibmet_nsfThresh,
+  ibmet_nsfNoise,
+  ibmet_nsfSigFrac
+]
+
