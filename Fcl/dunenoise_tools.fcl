@@ -38,7 +38,7 @@ tools.pedmetNoiseSignalFinderAdc: {
 tools.pedmetNoiseSignalFinderKe: @local::tools.pedmetNoiseSignalFinderAdc
 tools.pedmetNoiseSignalFinderKe.ThresholdMin: 0.20
 
-# Iceberg studies May 2020: 4-sigma, 200 e
+# Signal finder for Iceberg noise studies May 2020: 4-sigma, 200 e
 tools.pedmetNoiseSignalFinderIb3: @local::tools.pedmetNoiseSignalFinderAdc
 tools.pedmetNoiseSignalFinderIb3.ThresholdRatio: 4.00
 tools.pedmetNoiseSignalFinderIb3.ThresholdMin:   0.20
