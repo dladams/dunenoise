@@ -34,7 +34,7 @@ tools.ibmet_adcChannelNotSignalRmsPlotter.MetricMax: 0.35
 tools.ibmet_adcChannelNotSignalRmsPlotter.MetricLabel: "Sample RMS [ke]"
 tools.ibmet_adcChannelNotSignalRmsPlotter.HistName: "hchnsgrms%CRNAME%_ped_%0RUN%"
 tools.ibmet_adcChannelNotSignalRmsPlotter.HistTitle: "Not-signal sample RMS for run %RUN% %CRLABEL%"
-tools.ibmet_adcChannelNotSignalRmsPlotter.PlotFileName: "chmet_nsgrms_%CRNAME%_run%0RUN%.png"
+tools.ibmet_adcChannelNotSignalRmsPlotter.PlotFileName: "chmet_nsgrms_%CRNAME%_run%0RUN%.{png,tpad}"
 tools.ibmet_adcChannelNotSignalRmsPlotter.RootFileName: "pedmets_%CRNAME%.root"
 
 tools.ibmet_adcChannelNotSignalRms50Plotter: @local::tools.ibmet_adcChannelPedestalNoisePlotter
@@ -44,6 +44,6 @@ tools.ibmet_adcChannelNotSignalRms50Plotter.MetricMax: 5.0
 tools.ibmet_adcChannelNotSignalRms50Plotter.MetricSummaryView: "rms:drms"
 tools.ibmet_adcChannelNotSignalRms50Plotter.HistName: "hchnsgrms50%CRNAME%_ped_%0RUN%"
 tools.ibmet_adcChannelNotSignalRms50Plotter.HistTitle: "Not-signal 50-sample RMS for run %RUN% %CRLABEL%"
-tools.ibmet_adcChannelNotSignalRms50Plotter.PlotFileName: "chmet_nsgrms50_%CRNAME%_run%0RUN%.png"
+tools.ibmet_adcChannelNotSignalRms50Plotter.PlotFileName: "chmet_nsgrms50_%CRNAME%_run%0RUN%.{png,tpad}"
 tools.ibmet_adcChannelNotSignalRms50Plotter.RootFileName: "pedmets_%CRNAME%.root"
 

@@ -3,30 +3,40 @@
 #SFRUN=005726
 SFRUN=$1
 if [ -z "$SFRUN" ]; then
-  echo Usage: $0 RUN [SFEVTS]
-  echo "  e.g. $0 5240 000000-000200"
-  echo "  In/out directories taken from setupPlots.sh"
+  echo Usage: $0 RUN
+  echo "  e.g. $0 5240"
+  echo "  In/out directories and more taken from setupPlots.sh"
   exit 0
 fi
-SFEVTS=$2
-if [ -z "$SFEVTS" ]; then SFEVTS=000000-000200; fi
-unset RUNDIR
+unset DIRPAT
 unset OUTPRE
 if [ ! -r setupPlots.sh ]; then
   echo Please create setupPlots.sh
   exit 1
 fi
 source ./setupPlots.sh
-if [ -z "$RUNDIR" ]; then
-  echo Please define RUNDIR, e.g. in setupPlots.sh
+if [ -z "$DIRPAT" ]; then
+  echo Please define DIRPAT, e.g. in setupPlots.sh
   exit 2
 fi
 if [ -z "$OUTPRE" ]; then
-  echo Please define OUTPRER, e.g. in setupPlots.sh
+  echo Please define OUTPRE, e.g. in setupPlots.sh
   exit 2
 fi
-echo RUNDIR: $RUNDIR
+if [ -z "$SDET" ]; then
+  echo Please define SDET, e.g. in setupPlots.sh
+  exit 2
+fi
+if [ -z "$PLOTS" ]; then
+  echo Please define PLOTS, e.g. in setupPlots.sh
+  exit 2
+fi
+if [ -z "$CRVS" ]; then
+  echo Please define CRVS, e.g. in setupPlots.sh
+  exit 2
+fi
+echo DIRPAT: $DIRPAT
 echo OUTPRE: $OUTPRE
 SPRINT="png,pdf,tpad"
 SFRUN=00$SFRUN
-root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseHisto.C("'$RUNDIR'", "'$OUTPRE'", "tai:2000,tai-50:1100,cnr:3000,cnr-50:2500"   , "'$SFRUN'", "'$SFEVTS'", "zcGood-uvGood", "'$SPRINT'")'
+root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseHisto.C("'$DIRPAT'", "'$OUTPRE'", "'$PLOTS'"   , "'$SFRUN'", "'$SDET'", "'$CRVS'", "'$SPRINT'")'
