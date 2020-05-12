@@ -1,6 +1,5 @@
 #!/bin/sh
 
-#SFRUN=005726
 SFRUN=$1
 if [ -z "$SFRUN" ]; then
   echo Usage: $0 RUN

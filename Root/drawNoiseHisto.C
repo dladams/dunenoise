@@ -78,7 +78,7 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
   if ( sdet == "pdsp" ) {
     ichmod = 2560;
     ichcol = 1600;
-  } else if ( sdet == "iceberg" ) {
+  } else if ( sdet == "iceberg3" ) {
     ichmod = 1280;
     ichcol =  800;
   } else {
@@ -102,24 +102,6 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
     bool doGood = hnam.find("Good") != string::npos;
     Index ivch1 = 0;
     Index ivch2 = nvch;
-/*
-    if ( hnam.substr(0,3) == "all" ) {
-    } else if ( hnam.substr(0,2) == "uv" ) {
-    if ( nvie == 4 ) {
-      if ( ivie > 1 ) continue;
-    } else if ( nvie == 1 ) {
-      ivch2 = 1600;
-    }
-    } else if ( hnam.substr(0,2) == "zc" ) {
-      if ( nvie == 4 ) {
-        if ( ivie < 2 ) continue;
-      } else if ( nvie == 1 ) {
-        ivch1 = 1600;
-      }
-    } else {
-      cout << myname << "Unexpected histo name: " << hnam << endl;
-    }
-*/
     bool isInd = hnam.substr(0,2) == "uv";
     bool isCol = hnam.substr(0,2) == "zc";
     cout << myname << "Filling " << hnam << "(" << doGood << ", " << doBad << ")" << endl;
@@ -152,11 +134,14 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
   bool biglabs = true;
   NoiseSpecifier nspec(sspec);
   vector<int> itpss;
+  string explab;
   if ( sdet == "pdsp" ) {
     vector<int> tmp = {0, 1, 2, 3, 4, 5};
     itpss = tmp;
-  } else if ( sdet == "iceberg" ) {
+    explab = "#bf{ProtoDUNE-SP}";
+  } else if ( sdet == "iceberg3" ) {
     itpss.push_back(0);
+    explab = "#bf{Iceberg} run 3";
   } else {
     cout << myname << "Invalid detector: " << sdet << endl;
     return 3;
@@ -292,7 +277,7 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
   double xlab = 0.55;
   double ylab = 0.45;
   double dylab = 0.06;
-  labs.push_back(new TLatex(xlab, ylab, "#bf{ProtoDUNE-SP}"));
+  labs.push_back(new TLatex(xlab, ylab, explab.c_str()));
   ylab -= dylab;
   if ( titleAsLabel ) {
     labs.push_back(new TLatex(xlab, ylab, sttlSum.c_str()));
@@ -359,7 +344,7 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
 //        %REC% is the reco level from specs
 //        %NSAM% is the reco level from specs
 // sfrun is string rep of run number as it appears in file name
-// sdet is pdsp or iceberg
+// sdet is pdsp or iceberg3
 TPadManipulator* drawNoiseHisto(string filpat, string outpre, string a_sspec, string sfrun,
                                 string sdet, string dopt, string printSufs =".png") {
   string myname = "drawNoiseHisto: ";

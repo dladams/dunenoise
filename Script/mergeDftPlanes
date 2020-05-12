@@ -37,5 +37,5 @@ if [ -z "$OUTPRE" ]; then
   exit 2
 fi
 while [ ${#SFRUN} -lt 6 ]; do SFRUN=0$SFRUN; done
-JOBDIR="$RUNDIR/run${SFRUN}evts000000-000200"
 root.exe -b -q '$DUNENOISE_DIR/root/mergeDftPlanes.C("'$JOBDIR'", "'$OUTPRE'", "tai,cnr", "'$RUN'", "'$SLAB'", '$YLMIN', '$YLMAX', '$YMAX')'
+JOBDIR="$RUNDIR/run${SFRUN}evts000000-000200"

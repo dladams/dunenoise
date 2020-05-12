@@ -1,6 +1,6 @@
 # dunenoise/CMakeLists.txt
 #
-# CMakeLists for example project dunenoise
+# CMakeLists for dunenoise
 #
 # David Adams
 # April 2020
@@ -69,7 +69,7 @@ include(${ROOT_USE_FILE})
 # Subdirectories to process.
 #add_subdirectory(Interface)
 #add_subdirectory(Utility)
-#add_subdirectory(Tool)
+add_subdirectory(Tool)
 #add_subdirectory(Service)
 #add_subdirectory(Exec)
 add_subdirectory(Script)

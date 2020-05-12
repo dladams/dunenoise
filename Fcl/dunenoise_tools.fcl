@@ -3,8 +3,11 @@
 # David Adams
 # April 2020
 #
-
 # Fixed threshold signal finder.
+
+#######################################################################
+# ROI finders.
+#######################################################################
 
 tools.pedmetThresholdSignalFinderAdc: {
   tool_type: AdcThresholdSignalFinder
@@ -44,3 +47,48 @@ tools.pedmetNoiseSignalFinderIb3.ThresholdRatio: 4.00
 tools.pedmetNoiseSignalFinderIb3.ThresholdMin:   0.20
 tools.pedmetNoiseSignalFinderIb3.BinsBefore:    30
 tools.pedmetNoiseSignalFinderIb3.BinsAfter:     50
+
+#######################################################################
+# Slicers and splitters.
+#######################################################################
+
+# Slicer that selects tick regions outside of ROIS.
+tools.notRoiSlicer: {
+  tool_type: AdcRoiSlicer
+  LogLevel: 1
+  OutViewName: "noise"
+  SliceOpt: 2
+  CopyRaw: false
+}
+
+# Split selected regions in blocks of 1000 ticks.
+tools.adcSplit1000: {
+  tool_type: AdcChannelSplitter
+  LogLevel: 1
+  Length: 1000
+  DataPath: "noise"
+  DataView: "splitnoise"
+}
+
+#######################################################################
+# DFT power plotters.
+#######################################################################
+
+tools.pdspPlotDftTickPower: @local::tools.adcPlotDftTickPower
+tools.pdspPlotDftTickPower.ChannelStatusFlag: 3
+tools.pdspPlotDftTickPower.PlotChannelGroups: ["apacs", "apaus", "apazs", "apavs"]
+
+tools.ibPlotDftTickPower: @local::tools.adcPlotDftTickPower
+tools.ibPlotDftTickPower.ChannelStatusFlag: 3
+tools.ibPlotDftTickPower.PlotChannelRanges: ["apaz1", "apau", "apaz2", "apav"]
+tools.ibPlotDftTickPower.PlotSplitX: 2
+tools.ibPlotDftTickPower.PlotSplitY: 2
+tools.ibPlotDftTickPower.NBinX: 100
+#tools.ibPlotDftTickPower.YMinLog: 1.e-7
+tools.ibPlotDftTickPower.YMax:    4.0e-4
+tools.ibPlotDftTickPower.PlotName: ""
+tools.ibPlotDftTickPower.HistSummaryTitles: [
+  "DFT power for run %RUN% %CRNAME%",
+  "DFT power for run %RUN% event %EVENT%"
+]
+
