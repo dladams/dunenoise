@@ -50,6 +50,7 @@ The corresponding tpad file provides acccess to the underlying histograms.
 
 A signal finder is applied and inverted and then regions of 1000 contiguous samples are transformed to obtain the
 final power distributions which are averaged over all such regions in each wire plane.
+Bad and noisy channels are excluded.
 The distribution is binned---100 bins for 500 frequencies---and the limits chosen so the zero frequency term is recorded as underflow
 and appears as a solid bar in the plots.
 
