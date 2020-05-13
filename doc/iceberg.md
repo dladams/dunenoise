@@ -35,3 +35,15 @@ using the [drawNoise](../Script/drawNoise) script:
 drawNoise 5044
 </pre>
 An example plot is [here](noise_tai-tai-50-cnr-cnr-50_zcGood-uvGood_run005044.png).
+
+### DFTs
+
+Top-level fcl is also provided to create DFT (discrete Fourier transform) distributions of power vs. frequency, e.g.
+<pre>
+duneproc ibtaiNoiseDft iceberg005044
+duneproc ibcnrNoiseDft iceberg005044
+</pre>
+to repectively create the plots before and after CNR.
+The run directory ibtaiNoiseDft/iceberg005044 will hold the plot file [dftpowt_run005044.png](dftpowt_run004044.png) with a separate DFT power distribution
+for each of the four wire planes (z1, z2, u and v).
+The corresponding tpad file provides acccess to the underlying histograms.
