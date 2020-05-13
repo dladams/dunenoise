@@ -91,4 +91,5 @@ tools.ibPlotDftTickPower.HistSummaryTitles: [
   "DFT power for run %RUN% %CRNAME%",
   "DFT power for run %RUN% event %EVENT%"
 ]
+tools.ibPlotDftTickPower.PlotSummaryNames: ["dftpowt_run%0RUN%.{png,tpad}", ""]
 
