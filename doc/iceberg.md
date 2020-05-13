@@ -8,7 +8,7 @@ May 2020
 Dunenoise is one in series of DUNE analysis packages.
 It depends on [duneproc](https://github.com/dladams/duneproc) which must also be installed.
 The examples below make use of the duneproc command from that package.
-See the [Iceberg tutorial](https://github.com/dladams/duneproc/tutorial_iceberg.md) in that package for some guidance on package installation, use of the duneproc command
+See the [Iceberg tutorial](https://github.com/dladams/duneproc/doc/tutorial_iceberg.md) in that package for some guidance on package installation, use of the duneproc command
 and construction of dataset descriptions used with that command.
 
 ### Noise distributions
