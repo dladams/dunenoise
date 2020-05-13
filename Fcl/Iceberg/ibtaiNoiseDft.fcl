@@ -7,6 +7,11 @@
 #
 # E.g. run with
 #   duneproc ibtaiNoiseDft iceberg005044
+# and the plot may be found at
+#   ibtaiNoiseDft/iceberg005044/dftpowtlog_run005044.png
+#
+# Or to make a plot with the first 200 kHz:
+#   duneproc ibtaiNoiseDft/ibsetDftFmax200 iceberg005044
 #   
 # Use ibcnrNoiseDft to produce the corresponding plots after CNR.
 

@@ -1,3 +1,20 @@
+# ibcnrNoiseDft.fcl
+#
+# David Adams
+# May 2020
+#
+# Top-level fcl to create a DFT plot of sample noise for Iceberg before CNR.
+#
+# E.g. run with
+#   duneproc ibcnrNoiseDft iceberg005044
+# and the plot may be found at
+#   ibcnrNoiseDft/iceberg005044/dftpowtlog_run005044.png
+#
+# Or to make a plot with the first 200 kHz:
+#   duneproc ibcnrNoiseDft/ibsetDftFmax200 iceberg005044
+#   
+# Use ibtaiNoiseDft to produce the corresponding plots before CNR.
+
 #include "run_dataprep_iceberg.fcl"
 #include "dunenoise_tools.fcl"
 
