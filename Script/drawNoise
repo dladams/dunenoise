@@ -1,5 +1,22 @@
 #!/bin/sh
 
+# drawNoise
+#
+# David Adams
+# May 2020
+#
+# Bash script to create a noise summary plot showing the distributions
+# of sample and integrated noise before and after CNR.
+#
+# The working directory must contain the file setupPlots.sh and it or the
+# environment must define the following variables:
+#
+#   DIRPAT - pattern for directories containing the noise vs. channel plots
+#   OUTPRE - Prefix for the output plot file name.
+#   SDET - Detector name: iceberg3, ...
+#   PLOTS - include plots and ranges, e.g. "tai:300,tai-50:200,cnr:300,cnr-50:200"
+#   CRVS - Curves to incude on each plot, e.g. "zcGood-uvGood"
+
 SFRUN=$1
 if [ -z "$SFRUN" ]; then
   echo Usage: $0 RUN
