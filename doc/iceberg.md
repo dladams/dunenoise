@@ -36,14 +36,33 @@ drawNoise 5044
 </pre>
 An example plot is [here](noise_tai-tai-50-cnr-cnr-50_zcGood-uvGood_run005044.png).
 
-### DFTs
+### DFT power plots
 
-Top-level fcl is also provided to create DFT (discrete Fourier transform) distributions of power vs. frequency, e.g.
+Top-level fcl is also provided to create DFT (discrete Fourier transform) distributions of noise power vs. frequency, e.g.
 <pre>
 duneproc ibtaiNoiseDft iceberg005044
 duneproc ibcnrNoiseDft iceberg005044
 </pre>
 to repectively create the plots before and after CNR.
-The run directory ibtaiNoiseDft/iceberg005044 will hold the plot file [dftpowt_run005044.png](dftpowt_run004044.png) with a separate DFT power distribution
+The run directory ibtaiNoiseDft/iceberg005044 will hold the plot file [dftpowt_run005044.png](dftpowt_run005044.png) with a separate DFT power distribution
 for each of the four wire planes (z1, z2, u and v).
 The corresponding tpad file provides acccess to the underlying histograms.
+
+A signal finder is applied and inverted and then regions of 1000 contiguous samples are transformed to obtain the
+final power distributions which are averaged over all such regions in each wire plane.
+The distribution is binned---100 bins for 500 frequencies---and the limits chosen so the zero frequency term is recorded as underflow
+and appears as a solid bar in the plots.
+
+The script [ibMergeDftPlots](../Script/ibMergeDftPlots) overlays the before and after CNR plots, e.g.
+<pre>
+ibMergeDftPlots 5044
+</pre>
+This produces the plot file [dft5044.png](dft5044.png).
+
+The zero frequncy contributions are not shown on these plots butit is possible to make unbinned plots of the first 100 frequencies (i.e. below 200 kHz) that includes this term:
+<pre>
+duneproc ibtaiNoiseDft/ibsetDftFmax200 iceberg005044
+duneproc ibcnrNoiseDft/ibsetDftFmax200 iceberg005044
+ibMergeDftPlots 5044 200
+</pre>
+with output now in [dft5044_fmax200.png](dft5044_fmax200.png).
