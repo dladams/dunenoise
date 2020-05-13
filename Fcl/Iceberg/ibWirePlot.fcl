@@ -1,0 +1,20 @@
+// ibWirePlot.fcl
+
+tools.ibWirePlotAll: {
+  tool_type: ApaWirePlot
+  LogLevel: 1
+  Xwidth: 5600
+  Ywidth: 4000
+  Xmin: -10.0
+  Xmax:  10.0
+  Zmin:  -3.0
+  Zmax: 119.0
+  Ymin:  75.0
+  Ymax: 178.0
+}
+
+tools.ibWirePlotFront: @local::tools.ibWirePlotAll
+tools.ibWirePlotFront.Xmax: 0.0
+
+tools.ibWirePlotBack: @local::tools.ibWirePlotAll
+tools.ibWirePlotBack.Xmin: 0.0
