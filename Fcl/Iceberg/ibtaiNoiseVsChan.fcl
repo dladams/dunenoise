@@ -1,0 +1,36 @@
+# ibtaiNoiseVsChan.fcl
+#
+# David Adams
+# May 2020
+#
+# Top-level fcl to create plots of sample and integrated noise
+# vs. channel for Iceberg before CNR.
+#
+# E.g. run with
+#   duneproc ibtaiNoiseVsChan iceberg005044
+# and the run directory
+#   ibtaiNoiseVsChan/iceberg005044
+# will have the noise plots
+#   chmet_nsgrms_all_run005044.png
+#   chmet_nsgrms50_all_run005044.png
+#   
+# Use ibcnrNoiseVsChan to produce the corresponding plots after CNR.
+
+#include "run_dataprep_iceberg.fcl"
+#include "dunenoise_tools.fcl"
+
+# Set the dataprep reco sequence.
+services.RawDigitPrepService.AdcChannelToolNames: @local::ib3_dataprep_tools_calib_tail
+
+# Set the signal finder: 4-sigma, min 200 e
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+  pedmetNoiseSignalFinderIb3
+]
+
+# Add plotters for signal fraction and sample and integrated noise.
+#include "addIcebergPedmetKeNotSignalRmsSum.fcl"
+
+# Add diagnostic plots of the signal-finder metrics.
+#include "addIbNsfMetricPlots.fcl"
+#tools.ibmet_nsfThresh.MetricMax: 1.2

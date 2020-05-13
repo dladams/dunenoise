@@ -1,0 +1,15 @@
+# load_dunenoise_iceberg.fcl
+#
+# David Adams
+# May 2020
+#
+# Collect the service and tool configurations useful for
+# noise analysis of Iceberg data. Use the following in rootlogon.C
+# to make those tools and services available at the Root command line:
+#
+#   string loadfcl = "load_dunenoise_iceberg.fcl";
+#   gROOT->ProcessLine("ArtServiceHelper::load(loadfcl)");
+#   gROOT->ProcessLine("DuneToolManager* ptm = DuneToolManager::instance(loadfcl)");
+
+#include "load_dataprep_iceberg.fcl"
+#include "ibWirePlot.fcl"
