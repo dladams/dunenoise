@@ -15,7 +15,7 @@ if  [ -n "$FMAX" ]; then
   INPAT=$INPAT/ibsetDftFmax$FMAX
   OUTPAT=${OUTPAT}_fmax$FMAX
 fi
-INPAT="$INPAT/iceberg%RUN%/dftpowtlog_run%RUN%.tpad"
+INPAT="$INPAT/iceberg%RUN%/dftpowt_run%RUN%.tpad"
 OUTPAT="${OUTPAT}.{png,tpad}"
 
 root.exe -b -q '$DUNENOISE_DIR/root/ibMergeDftPlots.C("'$INPAT'", '$RUN', "'$OUTPAT'")'

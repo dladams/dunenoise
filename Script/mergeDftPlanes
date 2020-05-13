@@ -27,13 +27,15 @@ if [ ! -r $CONFILE ]; then
   echo Please create $CONFILE
   exit 1
 fi
-source ./$CONFILE
+echo $CONFILE
+source $CONFILE
+echo $OUTPRE
 if [ -z "$RUNDIR" ]; then
   echo Please define RUNDIR, e.g. in setupPlots.sh
   exit 2
 fi
 if [ -z "$OUTPRE" ]; then
-  echo Please define OUTPRER, e.g. in setupPlots.sh
+  echo Please define OUTPRE, e.g. in setupPlots.sh
   exit 2
 fi
 while [ ${#SFRUN} -lt 6 ]; do SFRUN=0$SFRUN; done
