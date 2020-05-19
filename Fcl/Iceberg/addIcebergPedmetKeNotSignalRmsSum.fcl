@@ -14,10 +14,14 @@
 
 services.RawDigitPrepService.AdcChannelToolNames: [
   @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+  "ibmet_adcChannelUtcRangePlotter",
   "ibmet_adcChannelSignalFractionPlotter",
   "ibmet_adcChannelNotSignalRmsPlotter",
   "ibmet_adcChannelNotSignalRms50Plotter"
 ]
+
+#tools.ibmet_adcChannelUtcRangePlotter.LogLevel: 3
+tools.ibmet_adcChannelUtcRangePlotter.HistName: "hchutc%CRNAME%_run%0RUN%"
 
 tools.ibmet_adcChannelSignalFractionPlotter: @local::tools.ibmet_adcChannelPedestalNoisePlotter
 tools.ibmet_adcChannelSignalFractionPlotter.Metric: "sigFrac"
