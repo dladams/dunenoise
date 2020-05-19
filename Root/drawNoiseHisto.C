@@ -31,7 +31,9 @@ bool isBad(unsigned int icha) {
       return true;
     }
   }
-  return pchs->get(icha) == 1;
+  // 13-may-2020
+  //return pchs->get(icha) == 1;
+  return pchs->get(icha) > 0;
 }
 
 struct NoiseSpecifier {
@@ -63,8 +65,11 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
   string sapa = std::to_string(iapa);
   string stps = std::to_string(itps);
   // Find the noise summary histograms.
+  string::size_type ipos = sfrun.find("-");
+  string sfrun1 = sfrun.substr(0, ipos);
   StringManipulator sman(filpat, true);
   sman.replace("%RUN%", sfrun);
+  sman.replace("%RUN1%", sfrun1);
   sman.replace("%REC%", nspec.sreco);
   sman.replace("%NSAM%", nspec.snsam);
   string infile = sman.str();
@@ -286,7 +291,15 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
   }
   string slab = sfrun;
   while ( slab.size() && slab[0] == '0' ) slab = slab.substr(1);
-  slab = "Run " + slab;
+  string::size_type ipos = slab.find("-");
+  if ( ipos == string::npos ) {
+    slab = "Run " + slab;
+  } else {
+    string srun1 = slab.substr(0, ipos);
+    string srun2 = slab.substr(ipos+1);
+    while ( srun2.size() && srun2[0] == '0' ) srun2 = srun2.substr(1);
+    slab = "Runs " + srun1 + " - " + srun2;
+  }
   labs.push_back(new TLatex(xlab, ylab, slab.c_str()));
   // Set margins and label sizes.
   if ( sttlSum.size() == 0 ) pman->setMarginTop(0.05);
