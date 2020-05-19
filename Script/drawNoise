@@ -20,20 +20,32 @@
 SFRUN=$1
 if [ -z "$SFRUN" ]; then
   echo Usage: $0 RUN
+  echo "    or $0 RUN1-RUN2"
   echo "  e.g. $0 5240"
   echo "  In/out directories and more taken from setupPlots.sh"
   exit 0
 fi
-unset DIRPAT
-unset OUTPRE
+ISGROUP=
+if echo $SFRUN | grep - 1>/dev/null 2>/dev/null; then ISGROUP=true; fi
 if [ ! -r setupPlots.sh ]; then
   echo Please create setupPlots.sh
   exit 1
 fi
 source ./setupPlots.sh
-if [ -z "$DIRPAT" ]; then
-  echo Please define DIRPAT, e.g. in setupPlots.sh
-  exit 2
+if [ -n "$ISGROUP" ]; then
+  echo Processing run group $SFRUN
+  if [ -z "$GRPPAT" ]; then
+    echo Please define GRPPAT, e.g. in setupPlots.sh
+    exit 2
+  fi
+  DIRPAT=$GRPPAT
+else
+  while [ ${#SFRUN} -lt 6 ]; do SFRUN=0$SFRUN; done
+  echo Processing run $SFRUN
+  if [ -z "$DIRPAT" ]; then
+    echo Please define DIRPAT, e.g. in setupPlots.sh
+    exit 2
+  fi
 fi
 if [ -z "$OUTPRE" ]; then
   echo Please define OUTPRE, e.g. in setupPlots.sh
@@ -54,5 +66,4 @@ fi
 echo DIRPAT: $DIRPAT
 echo OUTPRE: $OUTPRE
 SPRINT="png,pdf,tpad"
-SFRUN=00$SFRUN
 root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseHisto.C("'$DIRPAT'", "'$OUTPRE'", "'$PLOTS'"   , "'$SFRUN'", "'$SDET'", "'$CRVS'", "'$SPRINT'")'
