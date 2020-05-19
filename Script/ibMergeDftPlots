@@ -4,7 +4,7 @@ RUN=$1
 FMAX=$2
 
 if [ -z "$1" -o "$1" = "-h" ]; then
-  echo Usage: $0 RUN
+  echo "Usage: $0 RUN [FMAX]"
   exit 0
 fi
 

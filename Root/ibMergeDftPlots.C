@@ -15,15 +15,19 @@ TPadManipulator* ibMergeDftPlots(string infilPat, int irun, string outfilPat) {
   vector<string> srecs = {"tai", "cnr"};
   vector<int> icols = {lc.blue(), lc.red()};
   vector<int> lwids = {3, 2};
-  vector<string> labs = {"Before CNR", "After CNR"};
-  vector<float> ylabs = {0.80, 0.73};
-  vector<string> planes = {"z1", "u", "z2", "v"};
+  vector<string> labs = {"Before CNR", "After CNR", ""};
+  vector<float> ylabs = {0.73, 0.66};
+  vector<string> sttls = {"#bf{DUNE:Iceberg}", "", "Run " + srun};
+  vector<float> yttls = {0.40, 0.34, 0.28};
+  vector<string> planes = {"Z1", "U", "Z2", "V"};
   TPadManipulator* pmanout = nullptr;
   Index nman = 4;
   pmanout = new TPadManipulator(1400, 1000);
   pmanout->split(2, 2);
-  float tsiz = 0.045;
+  float tsiz = 0.05;
   string sttl0 = "DFT power for run " + srun + " plane ";
+  float xlab = 0.50;
+  float xttl = 0.60;
   for ( Index irec=0; irec<srecs.size(); ++irec ) {
     string srec = srecs[irec];
     int icol = icols[irec];
@@ -37,18 +41,17 @@ TPadManipulator* ibMergeDftPlots(string infilPat, int irun, string outfilPat) {
       return nullptr;
     }
     string hopt = irec ? "hist same" : "hist";
-    float xlab = 0.50;
     for ( Index iman=0; iman<nman; ++iman ) {
       cout << "====== " << irec << "-" << iman << endl;
       TPadManipulator* pmano = pmanout->man(iman);
       TPadManipulator* pmani = pman->man(iman);
       TH1* ph = pmani->hist();
       ph->Scale(1.e6);
-      string sttly = ph->GetYaxis()->GetTitle();
-      sttly += " [e^{2}]";
+      string sttly = "Power/tick/channel [e^{2}]";
       ph->GetYaxis()->SetTitle(sttly.c_str());
       ph->SetLineColor(icol);
       ph->SetLineWidth(lwids[irec]);
+      ph->SetTitle("");
       // Extract the noise in this view and the total.
       float hsum = ph->Integral();
       float hsumo = ph->Integral(0, ph->GetNbinsX()+1);
@@ -73,20 +76,34 @@ TPadManipulator* ibMergeDftPlots(string infilPat, int irun, string outfilPat) {
       ptxt->SetTextFont(42);
       ptxt->SetTextSize(tsiz);
       pmano->add(ptxt, "");
-      string sttl = sttl0 + planes[iman];
-      pmano->setTitle(sttl);
     }
   }
   for ( Index iman=0; iman<nman; ++iman ) {
     TPadManipulator* pman = pmanout->man(iman);
+    for ( Index ittl=0; ittl<sttls.size(); ++ittl ) {
+      string sttl = sttls[ittl];
+      if ( sttl.size() == 0 ) sttl = planes[iman] + " planes";;
+      TLatex* ptxt = new TLatex(xttl, yttls[ittl], sttl.c_str());
+      ptxt->SetNDC();
+      ptxt->SetTextFont(42);
+      ptxt->SetTextSize(tsiz);
+      pman->add(ptxt, "");
+    }
     pman->setLabelSizeX(tsiz);
     pman->setLabelSizeY(tsiz);
     pman->setTitleSize(tsiz);
-    pman->setMarginLeft(0.13);
-    pman->setMarginRight(0.04);
+    if ( false ) {
+      pman->setMarginLeft(0.13);
+      pman->setMarginRight(0.04);
+    } else {
+      pman->setMarginLeft(0.14);
+      pman->setMarginTop(0.05);
+    }
     pman->setMarginBottom(0.12);
     pman->setRangeY(0, 300.0);
+    pman->setTitle("");
     pman->addAxis();
+    pman->centerAxisTitles();
   }
   StringManipulator sman(outfilPat, true);
   sman.replace("%RUN%", srun);
