@@ -48,6 +48,11 @@ The run directory ibtaiNoiseDft/iceberg005044 will hold the plot file [dftpowt_r
 for each of the four wire planes (z1, z2, u and v).
 The corresponding tpad file provides acccess to the underlying histograms.
 
+To also get a DFT power plot for each event, include addDftEventPlots.fcl after either of the above, e.g.
+<pre>
+duneproc ibtaiNoiseDft/addDftEventPlots iceberg005044
+</pre>
+
 A signal finder is applied and inverted and then regions of 1000 contiguous samples are transformed to obtain the
 final power distributions which are averaged over all such regions in each wire plane.
 Bad and noisy channels are excluded.
@@ -60,7 +65,7 @@ ibMergeDftPlots 5044
 </pre>
 This produces the plot file [dft5044.png](dft5044.png).
 
-The zero frequncy contributions are not shown on these plots butit is possible to make unbinned plots of the first 100 frequencies (i.e. below 200 kHz) that includes this term:
+The zero frequency contributions are not shown on these plots but it is possible to make unbinned plots of the first 100 frequencies (i.e. below 200 kHz) that includes this term:
 <pre>
 duneproc ibtaiNoiseDft/ibsetDftFmax200 iceberg005044
 duneproc ibcnrNoiseDft/ibsetDftFmax200 iceberg005044
