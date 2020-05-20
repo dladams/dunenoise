@@ -8,7 +8,7 @@ May 2020
 Dunenoise is one in series of DUNE analysis packages.
 It depends on [duneproc](https://github.com/dladams/duneproc) which must also be installed.
 The examples below make use of the duneproc command from that package.
-See the Iceberg tutorial in that package for some guidance on package installation, use of the duneproc command
+See the [Iceberg tutorial](https://github.com/dladams/duneproc/blob/master/doc/tutorial_iceberg.md) in that package for some guidance on package installation, use of the duneproc command
 and construction of dataset descriptions used with that command.
 
 ### Noise distributions
@@ -36,14 +36,39 @@ drawNoise 5044
 </pre>
 An example plot is [here](noise_tai-tai-50-cnr-cnr-50_zcGood-uvGood_run005044.png).
 
-### DFTs
+### DFT power plots
 
-Top-level fcl is also provided to create DFT (discrete Fourier transform) distributions of power vs. frequency, e.g.
+Top-level fcl is also provided to create DFT (discrete Fourier transform) distributions of noise power vs. frequency, e.g.
 <pre>
 duneproc ibtaiNoiseDft iceberg005044
 duneproc ibcnrNoiseDft iceberg005044
 </pre>
 to repectively create the plots before and after CNR.
-The run directory ibtaiNoiseDft/iceberg005044 will hold the plot file [dftpowt_run005044.png](dftpowt_run004044.png) with a separate DFT power distribution
+The run directory ibtaiNoiseDft/iceberg005044 will hold the plot file [dftpowt_run005044.png](dftpowt_run005044.png) with a separate DFT power distribution
 for each of the four wire planes (z1, z2, u and v).
 The corresponding tpad file provides acccess to the underlying histograms.
+
+To also get a DFT power plot for each event, include addDftEventPlots.fcl after either of the above, e.g.
+<pre>
+duneproc ibtaiNoiseDft/addDftEventPlots iceberg005044
+</pre>
+
+A signal finder is applied and inverted and then regions of 1000 contiguous samples are transformed to obtain the
+final power distributions which are averaged over all such regions in each wire plane.
+Bad and noisy channels are excluded.
+The distribution is binned---100 bins for 500 frequencies---and the limits chosen so the zero frequency term is recorded as underflow
+and appears as a solid bar in the plots.
+
+The script [ibMergeDftPlots](../Script/ibMergeDftPlots) overlays the before and after CNR plots, e.g.
+<pre>
+ibMergeDftPlots 5044
+</pre>
+This produces the plot file [dft5044.png](dft5044.png).
+
+The zero frequency contributions are not shown on these plots but it is possible to make unbinned plots of the first 100 frequencies (i.e. below 200 kHz) that includes this term:
+<pre>
+duneproc ibtaiNoiseDft/ibsetDftFmax200 iceberg005044
+duneproc ibcnrNoiseDft/ibsetDftFmax200 iceberg005044
+ibMergeDftPlots 5044 200
+</pre>
+with output now in [dft5044_fmax200.png](dft5044_fmax200.png).
