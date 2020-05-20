@@ -1,0 +1,5 @@
+tools.ibPlotDftTickPower.PlotName: ""
+tools.ibPlotDftTickPower.PlotSummaryNames: [
+  "dftpowt_run%0RUN%.{png,tpad}",
+  "dftpowt_run%0RUN%_event%0EVENT%.{png,tpad}"
+]
