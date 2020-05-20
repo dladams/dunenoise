@@ -5,17 +5,22 @@ FMAX=$2
 
 if [ -z "$1" -o "$1" = "-h" ]; then
   echo "Usage: $0 RUN [FMAX]"
+  echo "   or: $0 RUN1-RUN2 [FMAX]"
   exit 0
 fi
 
 # RECO = tai, cnr
 INPAT=ib"%RECO%NoiseDft"
-OUTPAT="dft%RUN%"
+OUTPAT="plots-dft/dft%RUN%"
 if  [ -n "$FMAX" ]; then
   INPAT=$INPAT/ibsetDftFmax$FMAX
   OUTPAT=${OUTPAT}_fmax$FMAX
 fi
-INPAT="$INPAT/iceberg%RUN%/dftpowt_run%RUN%.tpad"
+if  [ echo $RUN | grep "-" 2>/dev/null 1>/dev/null ]; then
+  INPAT="$INPAT/iceberg%RUN%/dftpowt_run%RUN%.tpad"
+else
+  INPAT="$INPAT/ibgroup%RUN%/dftpowt_run%RUN1%.tpad"
+fi
 OUTPAT="${OUTPAT}.{png,tpad}"
 
-root.exe -b -q '$DUNENOISE_DIR/root/ibMergeDftPlots.C("'$INPAT'", '$RUN', "'$OUTPAT'")'
+root.exe -b -q '$DUNENOISE_DIR/root/ibMergeDftPlots.C("'$INPAT'", "'$RUN'", "'$OUTPAT'")'

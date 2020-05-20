@@ -33,6 +33,7 @@ if [ ! -r setupPlots.sh ]; then
 fi
 source ./setupPlots.sh
 if [ -n "$ISGROUP" ]; then
+  # Strip leading ibgroup if present--TBD
   echo Processing run group $SFRUN
   if [ -z "$GRPPAT" ]; then
     echo Please define GRPPAT, e.g. in setupPlots.sh

@@ -5,13 +5,23 @@
 //
 // Merge Iceberg before and after CNR plots.
 
-TPadManipulator* ibMergeDftPlots(string infilPat, int irun, string outfilPat) {
+TPadManipulator* ibMergeDftPlots(string infilPat, string srun, string outfilPat) {
   const string myname = "ibMergeDftPlots: ";
   using Index = unsigned int;
   LineColors lc;
-  string srun = to_string(irun);
   string sfrun = srun;
-  while ( sfrun.size() < 6 ) sfrun = "0" + sfrun;
+  string sfrun1;
+  string sfrun2;
+  string::size_type ipos = sfrun.find("-");
+  if ( ipos == string::npos ) {
+    while ( sfrun.size() < 6 ) sfrun = "0" + sfrun;
+  } else {
+    sfrun1 = sfrun.substr(0, ipos);
+    sfrun2 = sfrun.substr(ipos+1);
+    while ( sfrun1.size() < 6 ) sfrun1 = "0" + sfrun1;
+    while ( sfrun2.size() < 6 ) sfrun2 = "0" + sfrun2;
+    sfrun = sfrun1 + "-" + sfrun2;
+  }
   vector<string> srecs = {"tai", "cnr"};
   vector<int> icols = {lc.blue(), lc.red()};
   vector<int> lwids = {3, 2};
@@ -34,6 +44,8 @@ TPadManipulator* ibMergeDftPlots(string infilPat, int irun, string outfilPat) {
     StringManipulator sman(infilPat, true);
     sman.replace("%RECO%", srec);
     sman.replace("%RUN%", sfrun);
+    sman.replace("%RUN1%", sfrun1);
+    sman.replace("%RUN2%", sfrun2);
     string sfilin = sman.str();
     TPadManipulator* pman = TPadManipulator::read(sfilin);
     if ( pman == nullptr ) {
