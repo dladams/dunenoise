@@ -34,7 +34,7 @@ using the [drawNoise](../Script/drawNoise) script:
 <pre>
 drawNoise 5044
 </pre>
-An example plot is [here](noise_tai-tai-50-cnr-cnr-50_zcGood-uvGood_run005044.png).
+An example plot is [here](noise_tai-tai-50-cnr-cnr-50_zcGood-uvGood_run005044.png). The command makes use of a configuration file setupPlots.sh taken from the current directory. An example may be found [here](setupPlots.sh).
 
 ### DFT power plots
 
