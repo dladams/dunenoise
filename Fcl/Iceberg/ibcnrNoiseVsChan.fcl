@@ -25,11 +25,11 @@ services.RawDigitPrepService.AdcChannelToolNames: @local::ib3_dataprep_tools_cal
 # Set the signal finder: 4-sigma, min 200 e
 services.RawDigitPrepService.AdcChannelToolNames: [
   @sequence::services.RawDigitPrepService.AdcChannelToolNames,
-  pedmetNoiseSignalFinderIb3
+  pedmetNoiseSignalFinderIb3,
+  ibmet_adcChannelUtcRangePlotter,
+  ibmet_adcChannelNotSignalRmsPlotter,
+  ibmet_adcChannelNotSignalRms50Plotter
 ]
-
-# Add plotters for signal fraction and sample and integrated noise.
-#include "addIcebergPedmetKeNotSignalRmsSum.fcl"
 
 # Add diagnostic plots of the signal-finder metrics.
 #include "addIbNsfMetricPlots.fcl"

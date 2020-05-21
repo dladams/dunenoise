@@ -39,9 +39,6 @@ tools.ibPlotDftTickPower.PlotDataView: "noise/splitnoise"
 ##include "addIbChtSplitNoise.fcl"
 ##include "addIbChtNoise.fcl"
 
-# Add plotters for signal fraction and sample and integrated noise.
-##include "addIcebergPedmetKeNotSignalRmsSum.fcl"
-
 # Add diagnostic plots of the signal-finder metrics.
 ##include "addIbNsfMetricPlots.fcl"
 tools.ibmet_nsfThresh.MetricMax: 1.2
