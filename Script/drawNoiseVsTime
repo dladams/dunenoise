@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# drawNoiseVsTime
+#
+# David Adams
+# May 2020
+#
+# Bash script to create a noise vs time
+#
+# The working directory must contain the file setupPlots.sh and it or the
+# environment must define the following variables:
+#
+#   SUNNAM - Base for the noise summary output plot file names.
+
+RUN1=$1
+RUN2=$2
+NOISE=$3   # nsgrms, nsgrms50, ...
+YMAX=$4
+if [ -z "$YMAX" ]; then
+  echo Usage: $0 RUN1 RUN2 NOISE YMAX
+  echo "  NOISE = nsgrms, nsgrms50, ..."
+  exit 0
+fi
+source ./setupPlots.sh
+if [ -z "$SUMNAM" ]; then
+  echo Please define SUMNAM, e.g. in setupPlots.sh
+  exit 2
+fi
+SXVAR="run"
+SFIN=$SUMNAM.txt
+echo "Run range: $RUN1 - $RUN2"
+echo "File pattern: $SFIN"
+echo "Noise type: $NOISE"
+SPRINT="png,pdf,tpad"
+root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseVsTime.C('$RUN1', '$RUN2', "'$SFIN'", "'$SXVAR'", "'$NOISE'", '$YMAX')'

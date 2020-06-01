@@ -4,6 +4,7 @@
 install(PROGRAMS
   dunenoiseHelp
   drawNoise
+  drawNoiseVsTime
   mergeDftPlanes
   ibMergeDftPlots
 DESTINATION bin)

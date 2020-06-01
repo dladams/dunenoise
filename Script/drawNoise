@@ -12,7 +12,7 @@
 # environment must define the following variables:
 #
 #   DIRPAT - pattern for directories containing the noise vs. channel plots
-#   OUTNAM - Base for the output plot file names.
+#   SUMNAM - Base for the output plot file names.
 #   SDET - Detector name: iceberg3, ...
 #   PLOTS - include plots and ranges, e.g. "tai:300,tai-50:200,cnr:300,cnr-50:200"
 #   CRVS - Curves to incude on each plot, e.g. "zcGood-uvGood"
@@ -48,8 +48,8 @@ else
     exit 2
   fi
 fi
-if [ -z "$OUTNAM" ]; then
-  echo Please define OUTNAM, e.g. in setupPlots.sh
+if [ -z "$SUMNAM" ]; then
+  echo Please define SUMNAM, e.g. in setupPlots.sh
   exit 2
 fi
 if [ -z "$SDET" ]; then
@@ -65,6 +65,6 @@ if [ -z "$CRVS" ]; then
   exit 2
 fi
 echo DIRPAT: $DIRPAT
-echo OUTNAM: $OUTNAM
+echo SUMNAM: $SUMNAM
 SPRINT="png,pdf,tpad"
-root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseHisto.C("'$DIRPAT'", "'$OUTNAM'", "'$PLOTS'"   , "'$SFRUN'", "'$SDET'", "'$CRVS'", "'$SPRINT'")'
+root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseHisto.C("'$DIRPAT'", "'$SUMNAM'", "'$PLOTS'"   , "'$SFRUN'", "'$SDET'", "'$CRVS'", "'$SPRINT'")'
