@@ -1,3 +1,10 @@
+// drawNoiseHisto.C
+//
+// David Adams
+// June 2020
+//
+// Script to create summary noise distribution histograms.
+//
 // srec is expected to be format RRRQQ, RRRQQ-WW, RRRQQ:PP, RRRQQ-WW:PP
 //   RRR = cor, cni, ...
 //   QQ = qualifier, e.g. w1
@@ -38,17 +45,32 @@ bool isBad(unsigned int icha) {
 
 // sjob-svar:ymax
 struct NoiseSpecifier {
-  string sspec;     // e.g. tai-nsgms50
+  string sspec;     // e.g. tai-nsgms50, cnr-nsgrms:200
   string sreco;     // e.g. tai, cnr
   string svar;      // e.g. nsgrms, nsgrms50
   string snsam;     // e.g. "", "50"
   int nsam = 0;
+  float ymax = 0.0;
+  bool doPlot = true;
   NoiseSpecifier(string sspecIn) {
+    const string myname = "NoiseSpecifier::ctor: ";
     sspec = sspecIn;
     string::size_type ipos1 = sspec.find("-");
     if ( ipos1 != string::npos ) {
       svar = sspec.substr(ipos1+1);
       sreco = sspec.substr(0, ipos1);
+    }
+    StringManipulator smflds(svar, false);
+    StringManipulator::StringVector sflds = smflds.split(":");
+    if ( sflds.size() > 1 ) {
+      svar = sflds[0];
+      if ( sflds[1] == "noplot" ) {
+        doPlot = false;
+      } else {
+        istringstream ssymax(sflds[1]);
+        ssymax >> ymax;
+        cout << myname << "Set ymax to " << ymax << " for " << sspec << endl;
+      }
     }
     if ( svar.substr(0, 6) == "nsgrms" && svar.size() > 6 ) {
       string snsam = svar.substr(6);
@@ -57,8 +79,17 @@ struct NoiseSpecifier {
     }
   }
   bool isKeScale() const {
+    if ( svar.find("nsgrms") == string::npos ) return false;
     return sreco.find("adc") == string::npos;
   }
+  bool isAdcScale() const {
+    if ( svar.find("nsgrms") == string::npos ) return false;
+    return sreco.find("adc") != string::npos;
+  }
+  bool isUtc() const {
+    return svar.find("utc") != string::npos;
+  }
+  string recvar() const { return sreco + "-" + svar; }
 };
 
 int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string sdet, int itps, HistMap& hsts) {
@@ -70,9 +101,11 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
   // Find the noise summary histograms.
   string::size_type ipos = sfrun.find("-");
   string sfrun1 = sfrun.substr(0, ipos);
+  string sfrun2 = sfrun.substr(ipos+1);
   StringManipulator sman(filpat, true);
   sman.replace("%RUN%", sfrun);
   sman.replace("%RUN1%", sfrun1);
+  sman.replace("%RUN2%", sfrun2);
   sman.replace("%REC%", nspec.sreco);
   sman.replace("%VAR%", nspec.svar);
   string infile = sman.str();
@@ -135,10 +168,10 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
 }
 
 // Create a pad for one pair of histograms.
-int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, string sdet, string dopt,
+int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, string dopt,
                    TPadManipulator* pman, ostream& txtout) {
   string myname = "plotNoiseHisto: ";
-  cout << myname << filpat << ", " << sspec << ", " << ymaxin << endl;
+  cout << myname << filpat << ", " << sspec << endl;
   bool titleAsLabel = true;
   bool biglabs = true;
   NoiseSpecifier nspec(sspec);
@@ -194,7 +227,7 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
   }
   int nbin = 70;
   double xmin = 0.0;
-  double xmax = 14.0;
+  double xmax = 0.0;
   string sxttl = "Noise [(ADC count)/tick]";
   string sntype = "sample";
   if ( nspec.isKeScale() ) {
@@ -206,10 +239,15 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
       xmax = 0.35;
       sxttl = "Noise [ke/tick]";
     }
-  } else if ( nspec.nsam ) {
-    xmax = 200.0;
-    sxttl = "Noise [(ADC count)/(" + nspec.snsam + " tick)]";
-    sntype = "integrated";
+  } else if ( nspec.isAdcScale() ) {
+    if ( nspec.nsam ) {
+      xmax = 14.0;
+      sxttl = "Noise [(ADC count)/tick]";
+      sntype = "integrated";
+    } else {
+      xmax = 200.0;
+      sxttl = "Noise [(ADC count)/(" + nspec.snsam + " tick)]";
+    }
   }
   string sttlSuf;
   if ( nspec.sreco == "cor" ) sttlSuf = " without CNR";
@@ -278,7 +316,10 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
     ssmean << std::fixed << mean;
     string slab = legdescs[hnam] + ": #LT#sigma#GT = " + ssmean.str() + " " + sunit;
     pleg->AddEntry(ph, slab.c_str(), "l");
-    txtout << setw(15) << sspec << " " << setw(10) << hnam << " " << mean << "\n";
+    txtout << setw(15) << nspec.recvar() << " " << setw(10) << hnam << " ";
+    if ( nspec.isUtc() ) txtout << int(mean+0.499);
+    else txtout << mean;
+    txtout << "\n";
   }
   // Create labels.
   vector<TLatex*> labs;
@@ -304,17 +345,16 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
     slab = "Runs " + srun1 + " - " + srun2;
   }
   labs.push_back(new TLatex(xlab, ylab, slab.c_str()));
-  // Set margins and label sizes.
-  if ( sttlSum.size() == 0 ) pman->setMarginTop(0.05);
-  if ( biglabs ) {
-    pman->setLabelSizeX(0.05);
-    pman->setLabelSizeY(0.05);
-    pman->setMarginLeft(0.13);
-    pman->setMarginBottom(0.12);
-  }
-
   // Draw.
   if ( doMan ) {
+    // Set margins and label sizes.
+    if ( sttlSum.size() == 0 ) pman->setMarginTop(0.05);
+    if ( biglabs ) {
+      pman->setLabelSizeX(0.05);
+      pman->setLabelSizeY(0.05);
+      pman->setMarginLeft(0.13);
+      pman->setMarginBottom(0.12);
+    }
     double ymax = 0.0;
     for ( string hnam : hnams ) {
       TH1* ph = hsts[hnam];
@@ -326,7 +366,7 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
       lineWidth = 3;
     }
     ymax *= 1.03;
-    if ( ymaxin > 0.0 ) ymax = ymaxin;
+    if ( nspec.ymax > 0.0 ) ymax = nspec.ymax;
     for ( TLatex* ptxt : labs ) {
       ptxt->SetNDC();
       ptxt->SetTextFont(42);
@@ -350,56 +390,62 @@ int plotNoiseHisto(string filpat, string sspec, float ymaxin, string sfrun, stri
 }
 
 // Create a pad with multiple histograms.
+// filpat is the pattern for the input file
+//        %RUN% is the run number or range from sfrun
+//        %RUN1%, %RUN2% are the run numbers from sfrun=RUN1-RUN2
+//        %REC% is the reco level from specs
+//        %VAR% is the variable level from specs
+// outnam is the base for out put files with the following substitutions
+//        %RUN% is the run number or range from sfrun
+//        %ALLSPEC% is built from the specifier from each plot
 // a_sspec - comma-separated list of specifiers: REC-VAR, REC-N:YMAX
 //           REC = tai, cnr
 //           VAR = nsgrms, nsgrms50, ...
 //           YMAX  = limit for plot
 //           One plot is filled for each entry.
-// filpat is the pattern for the input file
-//        %RUN% is the run number from sfrun
-//        %REC% is the reco level from specs
-//        %VAR% is the variable level from specs
 // sfrun is string rep of run number as it appears in file name
 // sdet is pdsp or iceberg3
-TPadManipulator* drawNoiseHisto(string filpat, string outpre, string a_sspec, string sfrun,
-                                string sdet, string dopt, string printSufs =".png") {
+// scurves is which curves to draw for each plot, e.g. "zcGood-uvGood"
+// plotSufs is the tpad suffix for output plots
+TPadManipulator* drawNoiseHisto(string filpat, string outnam, string a_sspec, string sfrun,
+                                string sdet, string scurves, string plotSufs =".png") {
   string myname = "drawNoiseHisto: ";
   StringManipulator sman(a_sspec, true);
   StringManipulator::StringVector sspecs = sman.split(",");
   int nssp = sspecs.size();
+  int nman = 0;
   if ( nssp == 0 ) return nullptr;
-  TPadManipulator* pmantop = new TPadManipulator(1400, 1000);
-  if ( nssp > 1 ) {
-    int dim = int(sqrt(nssp-1)) + 1;
-    pmantop->split(dim, dim);
-  }
-  string fnam = outpre + "noise_";
+  // Build allspec.
+  string allspec;
   for ( int issp=0; issp<nssp; ++issp ) {
     string sspec = sspecs[issp];
-    StringManipulator smflds(sspec, false);
-    StringManipulator::StringVector sflds = smflds.split(":");
-    sspec = sflds[0];
-    if ( issp ) fnam += "-";
-    fnam += sspec;
+    NoiseSpecifier nspec(sspec);
+    if ( issp ) allspec += "_";
+    allspec += nspec.recvar();  // sspec without ymax
+    if ( nspec.doPlot ) ++nman;
   }
-  if ( dopt.size() ) fnam += "_" + dopt;
-  fnam += "_run" + sfrun;
+  cout << "nssp, nman = " << nssp << ", " << nman << endl;
+  // Build the output file base.
+  StringManipulator smano(outnam, true);
+  smano.replace("%RUN%", sfrun);
+  smano.replace("%CURVES%", scurves);
+  smano.replace("%ALLSPEC%", allspec);
+  string fnam = smano.str();
+  // Build the manipulator.
+  TPadManipulator* pmantop = new TPadManipulator(1400, 1000);
+  if ( nman > 1 ) {
+    int dim = int(sqrt(nman-1) + 0.01) + 1;
+    pmantop->split(dim, dim);
+  }
   string txtnam = fnam + ".txt";
   ofstream txtout(txtnam.c_str());
+  int iman = 0;
   for ( int issp=0; issp<nssp; ++issp ) {
     string sspec = sspecs[issp];
     cout << myname << sspec << endl;
-    StringManipulator smflds(sspec, false);
-    StringManipulator::StringVector sflds = smflds.split(":");
-    sspec = sflds[0];
-    float ymax = 0.0;
-    if ( sflds.size() > 1 ) {
-      istringstream ssymax(sflds[1]);
-      ssymax >> ymax;
-      cout << myname << "Set ymax to " << ymax << " for " << sspec << endl;
-    }
-    TPadManipulator* pman = pmantop->man(issp);
-    int pstat = plotNoiseHisto(filpat, sspec, ymax, sfrun, sdet, dopt, pman, txtout);
+    NoiseSpecifier nspec(sspec);
+    TPadManipulator* pman = nspec.doPlot ? pmantop->man(iman++) : nullptr;
+    int pstat = plotNoiseHisto(filpat, sspec, sfrun, sdet, scurves, pman, txtout);
     if ( pstat ) {
       cout << myname << "Pad fill returned error " <<  pstat << endl;
       delete pmantop;
@@ -407,8 +453,8 @@ TPadManipulator* drawNoiseHisto(string filpat, string outpre, string a_sspec, st
     }
   }
   cout << "Output summary: " << txtnam << endl;
-  if ( printSufs.size() ) {
-    fnam += ".{" + printSufs + "}";
+  if ( plotSufs.size() ) {
+    fnam += ".{" + plotSufs + "}";
     cout << myname << "Printing " << fnam << endl;
     pmantop->print(fnam);
   }
