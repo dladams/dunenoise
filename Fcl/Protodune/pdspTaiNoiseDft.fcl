@@ -1,0 +1,42 @@
+# pdspTaiNoiseDft.fcl
+#
+# David Adams
+# July 2020
+#
+# Top-level fcl to create a DFT plot of sample noise for protoDUNE-SP before CNR.
+#
+# E.g. run with
+#   duneproc pdspTaiNoiseDft np04_run011778_evts000000-00100
+# and the plot may be found at
+#   pdspTaiNoiseDft/iceberg005044/dftpowtlog_run011778.png
+#
+# Or to make a plot with the first 200 kHz:
+#   duneproc ibtaiNoiseDft/ibsetDftFmax200/dpcr_apa3 iceberg005044
+#   
+# Use ibcnrNoiseDft to produce the corresponding plots after CNR.
+
+#include "run_dataprep.fcl"
+#include "pdsp_dunenoise_tools.fcl"
+
+# Set the dataprep reco sequence.
+services.RawDigitPrepService.AdcChannelToolNames: @local::protodune_dataprep_tools_calib_tail
+
+# Set the signal finder: 4-sigma, min 200 e
+services.RawDigitPrepService.AdcChannelToolNames: [
+  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+  pedmetNoiseSignalFinderKe,
+  notRoiSlicer,
+  adcSplit2000,
+  adcFFT,
+  pdspPlotDftTickPower
+]
+tools.adcFFT.DataView: "noise/splitnoise"
+tools.pdspPlotDftTickPower.PlotDataView: "noise/splitnoise"
+
+# Uncomment to add channel tick plots.
+##include "addChannelTickPrep.fcl"
+tools.pdchtp_Zplanes.DataView: "noise/splitnoise"
+
+# Add diagnostic plots of the signal-finder metrics.
+##include "addIbNsfMetricPlots.fcl"
+tools.ibmet_nsfThresh.MetricMax: 1.2

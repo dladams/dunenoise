@@ -1,0 +1,92 @@
+# dunenoise_tools.fcl
+#
+# David Adams
+# April 2020
+#
+# Fixed threshold signal finder.
+
+#######################################################################
+# ROI finders.
+#######################################################################
+
+tools.pedmetThresholdSignalFinderAdc: {
+  tool_type: AdcThresholdSignalFinder
+  LogLevel: 1
+  ThresholdMin: 30.0
+  BinsBefore: 10
+  BinsAfter: 20
+  FlagPositive: true
+  FlagNegative: true
+}
+
+tools.pedmetThresholdSignalFinderKe: @local::tools.pedmetThresholdSignalFinderAdc
+tools.pedmetThresholdSignalFinderKe.ThresholdMin: 0.70
+  
+# Dynamic threshold signal finder.
+
+tools.pedmetNoiseSignalFinderAdc: {
+  tool_type: AdcNoiseSignalFinder
+  LogLevel: 1
+  SigFracMax: 0.80
+  ThresholdMin: 20.0
+  ThresholdRatio: 5.0
+  ThresholdRatioTol: 0.1
+  MaxLoop: 20.0
+  BinsBefore: 10
+  BinsAfter: 20
+  FlagPositive: true
+  FlagNegative: true
+}
+
+tools.pedmetNoiseSignalFinderKe: @local::tools.pedmetNoiseSignalFinderAdc
+tools.pedmetNoiseSignalFinderKe.ThresholdMin: 0.20
+
+#######################################################################
+# Slicers and splitters.
+#######################################################################
+
+# Slicer that selects tick regions outside of ROIS.
+tools.notRoiSlicer: {
+  tool_type: AdcRoiSlicer
+  LogLevel: 1
+  OutViewName: "noise"
+  SliceOpt: 2
+  CopyRaw: false
+}
+
+# Split selected regions in blocks of 2000 ticks.
+tools.adcSplit1000: {
+  tool_type: AdcChannelSplitter
+  LogLevel: 1
+  Length: 1000
+  DataPath: "noise"
+  DataView: "splitnoise"
+}
+
+# Split selected regions in blocks of 2000 ticks.
+tools.adcSplit2000: {
+  tool_type: AdcChannelSplitter
+  LogLevel: 1
+  Length: 2000
+  DataPath: "noise"
+  DataView: "splitnoise"
+}
+
+#######################################################################
+# Metric summary plotters.
+#######################################################################
+
+
+#######################################################################
+# DFT power plotters.
+#######################################################################
+
+tools.pdspPlotDftTickPower: @local::tools.adcPlotDftTickPower
+tools.pdspPlotDftTickPower.ChannelStatusFlag: 3
+tools.pdspPlotDftTickPower.PlotChannelGroups: ["apacs", "apaus", "apazs", "apavs"]
+tools.pdspPlotDftTickPower.PlotSplitX: 2
+tools.pdspPlotDftTickPower.PlotSplitY: 2
+tools.pdspPlotDftTickPower.NBinX: 100
+tools.pdspPlotDftTickPower.ChannelStatusFlag: 3
+tools.pdspPlotDftTickPower.HistSummaryTitles: ["DFT power for %CGLABEL% run %RUN%", ""]
+

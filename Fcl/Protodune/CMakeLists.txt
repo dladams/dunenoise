@@ -1,4 +1,4 @@
-# dunenoise/Fcl/CMakeLists.txt
+# dunenoise/Fcl/Protodune/CMakeLists.txt
 
 # Install fcl files.
 install(
@@ -6,6 +6,3 @@ install(
   DESTINATION fcl
   FILES_MATCHING PATTERN "*.fcl"
 )
-
-add_subdirectory("Iceberg")
-add_subdirectory("Protodune")
