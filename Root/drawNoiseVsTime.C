@@ -5,7 +5,8 @@
 //
 // Draw noise vs time. and after CNR plots.
 
-TPadManipulator* drawNoiseVsTime(int irun1, int irun2, string spatin, string sxvar, string snoise, float ymax) {
+TPadManipulator* drawNoiseVsTime(int irun1, int irun2, string spatin, string sxvar, string snoise,
+                                 bool useMedian, float ymax) {
   const string myname = "drawNoiseVsTime: ";
   TGraph* pgr = new TGraph();
   map<string, TGraph*> grs;
@@ -36,13 +37,14 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, string spatin, string sxv
     cout << myname << "Reading " << sfin << endl;
     string svar;
     string scrv;
-    double val;
+    double mean, median;
     float valmax = 0.0;
-    while ( fin >> svar >> scrv >> val ) {
+    while ( fin >> svar >> scrv >> mean >> median ) {
       string::size_type ipos = svar.find("-");
       string svar1 = svar.substr(0, ipos);
       string svar2 = svar.substr(ipos + 1);
       if ( svar2 == snoise ) {
+        double val = useMedian ? median : mean;
         string gname = svar + ":" + scrv;
         if ( grs.count(gname) == 0 ) {
           grs[gname] = new TGraph;
@@ -70,9 +72,10 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, string spatin, string sxv
     }
     //vector<string> svar = "tai-nsgrms50";
   }
+  string spre = useMedian ? "Median " : "Mean ";
   string sttl;
-  if ( snoise == "nsgrms" ) sttl = "Sample noise";
-  else if ( snoise.substr(0,6) == "nsgrms" ) sttl = "Integrated noise";
+  if ( snoise == "nsgrms" ) sttl = spre + "sample noise";
+  else if ( snoise.substr(0,6) == "nsgrms" ) sttl = spre + "integrated noise";
   TPadManipulator* ppad = new TPadManipulator(1400, 500);
   ppad->add(pgrmax, "P");
   for ( auto& igr : grs ) {
@@ -82,12 +85,14 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, string spatin, string sxv
     ppad->setGridY();
   }
   ppad->add(pleg);
-  string fnamout = "noiseVsTime_" + snoise + "_" + sruns + ".png";
+  string smed = useMedian ? "median" : "mean";
+  string fnamout = "noiseVsTime_" + snoise + "_" + smed + "_" + sruns + ".png";
   ppad->setRangeX(irun1-1, irun2+1);
   ppad->setRangeY(0, ymax);
   ppad->showGraphOverflow();
   ppad->setTitle(sttl);
   //ppad->centerAxisTitles();
   ppad->print(fnamout);
+  cout << myname << "Printed " << fnamout << endl;
   return ppad;
 }

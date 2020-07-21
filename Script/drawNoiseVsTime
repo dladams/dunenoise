@@ -16,9 +16,12 @@ RUN1=$1
 RUN2=$2
 NOISE=$3   # nsgrms, nsgrms50, ...
 YMAX=$4
+MEDIAN=$5  # true to plot median instead of mean
+if [ -z "$5" ]; then MEDIAN=true; fi
 if [ -z "$YMAX" ]; then
-  echo Usage: $0 RUN1 RUN2 NOISE YMAX
+  echo Usage: $0 RUN1 RUN2 NOISE YMAX MEDIAN
   echo "  NOISE = nsgrms, nsgrms50, ..."
+  echo "  MEDIAN [true] = true/false to plot median/mean"
   exit 0
 fi
 source ./setupPlots.sh
@@ -32,4 +35,4 @@ echo "Run range: $RUN1 - $RUN2"
 echo "File pattern: $SFIN"
 echo "Noise type: $NOISE"
 SPRINT="png,pdf,tpad"
-root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseVsTime.C('$RUN1', '$RUN2', "'$SFIN'", "'$SXVAR'", "'$NOISE'", '$YMAX')'
+root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseVsTime.C('$RUN1', '$RUN2', "'$SFIN'", "'$SXVAR'", "'$NOISE'", '$MEDIAN', '$YMAX')'

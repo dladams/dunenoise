@@ -296,10 +296,12 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, strin
     }
   }
   // Create legend.
+  bool showMedian = true;
   double dyl = 0.05;
   double yl2 = 0.85;
   double yl1 = yl2 - (hnams.size()+0.5)*dyl;
-  TLegend* pleg = new TLegend(0.55, yl1, 1.00, yl2);
+  double xl1 = showMedian ? 0.40 : 0.55;
+  TLegend* pleg = new TLegend(xl1, yl1, 0.95, yl2);
   pleg->SetBorderSize(0);
   pleg->SetFillStyle(0);
   pleg->SetMargin(0.10);  // Fraction used for symbol
@@ -314,11 +316,27 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, strin
     ssmean.precision(prec);
     double mean = fac*ph->GetMean();
     ssmean << std::fixed << mean;
-    string slab = legdescs[hnam] + ": #LT#sigma#GT = " + ssmean.str() + " " + sunit;
+    string slab = legdescs[hnam] + ": #bar{#sigma} = " + ssmean.str() + " " + sunit;
+    double median = 0.0;
+    if ( showMedian ) {
+      double q = 0.5;
+      ph->GetQuantiles(1, &median, &q);
+      median *= fac;
+      ostringstream ssmed;
+      ssmed.precision(prec);
+      ssmed << std::fixed << median;
+      slab += ", #tilde{#sigma} = " + ssmed.str() + " " + sunit;
+    }
     pleg->AddEntry(ph, slab.c_str(), "l");
     txtout << setw(15) << nspec.recvar() << " " << setw(10) << hnam << " ";
-    if ( nspec.isUtc() ) txtout << int(mean+0.499);
-    else txtout << mean;
+    int wval = 12;
+    if ( nspec.isUtc() ) {
+      txtout << setw(wval) << int(mean+0.499);
+      if ( showMedian ) txtout << " " << setw(wval) << int(median+0.499);
+    } else {
+      txtout << setw(wval) << mean;
+      if ( showMedian ) txtout << " " << setw(wval) << median;
+    }
     txtout << "\n";
   }
   // Create labels.

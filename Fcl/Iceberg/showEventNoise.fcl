@@ -1,0 +1,8 @@
+tools.ibmet_adcChannelNotSignalRmsPlotter.HistTitle: "Not-signal sample RMS for run %RUN% event %EVENT% %CRLABEL%"
+tools.ibmet_adcChannelNotSignalRmsPlotter.PlotFileName: "chmet_nsgrms_%CRNAME%_run%0RUN%event%0EVENT%.{png,tpad}"
+tools.ibmet_adcChannelNotSignalRms50Plotter.HistTitle: "Not-signal 50-sample RMS for run %RUN% event %EVENT% %CRLABEL%"
+tools.ibmet_adcChannelNotSignalRms50Plotter.PlotFileName: "chmet_nsgrms50_%CRNAME%_run%0RUN%event%0EVENT%.{png,tpad}"
+
+tools.ibmet_adcChannelUtcRangePlotter.HistTitle: "ADC UTC range for Iceberg run %RUN% event %EVENT%"
+tools.ibmet_adcChannelUtcRangePlotter.PlotFileName: "chmet_utcran_%CRNAME%_run%0RUN%.{png,tpad}"
+
