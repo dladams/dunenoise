@@ -18,25 +18,26 @@
 #   CRVS - Curves to incude on each plot, e.g. "zcGood-uvGood"
 
 SFRUN=$1
+SUPFILE=./setupPlots.sh
 if [ -z "$SFRUN" ]; then
   echo Usage: $0 RUN
   echo "    or $0 RUN1-RUN2"
   echo "  e.g. $0 5240"
-  echo "  In/out directories and more taken from setupPlots.sh"
+  echo "  In/out directories and more taken from $SUPFILE"
   exit 0
 fi
 ISGROUP=
 if echo $SFRUN | grep - 1>/dev/null 2>/dev/null; then ISGROUP=true; fi
-if [ ! -r setupPlots.sh ]; then
-  echo Please create setupPlots.sh
+if [ ! -r $SUPFILE ]; then
+  echo Please create $SUPFILE
   exit 1
 fi
-source ./setupPlots.sh
+source $SUPFILE
 if [ -n "$ISGROUP" ]; then
   # Strip leading ibgroup if present--TBD
   echo Processing run group $SFRUN
   if [ -z "$GRPPAT" ]; then
-    echo Please define GRPPAT, e.g. in setupPlots.sh
+    echo Please define GRPPAT, e.g. in $SUPFILE
     exit 2
   fi
   DIRPAT=$GRPPAT
@@ -44,24 +45,24 @@ else
   while [ ${#SFRUN} -lt 6 ]; do SFRUN=0$SFRUN; done
   echo Processing run $SFRUN
   if [ -z "$DIRPAT" ]; then
-    echo Please define DIRPAT, e.g. in setupPlots.sh
+    echo Please define DIRPAT, e.g. in $SUPFILE
     exit 2
   fi
 fi
 if [ -z "$SUMNAM" ]; then
-  echo Please define SUMNAM, e.g. in setupPlots.sh
+  echo Please define SUMNAM, e.g. in $SUPFILE
   exit 2
 fi
 if [ -z "$SDET" ]; then
-  echo Please define SDET, e.g. in setupPlots.sh
+  echo Please define SDET, e.g. in $SUPFILE
   exit 2
 fi
 if [ -z "$PLOTS" ]; then
-  echo Please define PLOTS, e.g. in setupPlots.sh
+  echo Please define PLOTS, e.g. in $SUPFILE
   exit 2
 fi
 if [ -z "$CRVS" ]; then
-  echo Please define CRVS, e.g. in setupPlots.sh
+  echo Please define CRVS, e.g. in $SUPFILE
   exit 2
 fi
 echo DIRPAT: $DIRPAT

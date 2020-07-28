@@ -38,9 +38,8 @@ bool isBad(unsigned int icha) {
       return true;
     }
   }
-  // 13-may-2020
-  //return pchs->get(icha) == 1;
-  return pchs->get(icha) > 0;
+  return pchs->get(icha) == 1;
+  //return pchs->get(icha) > 0;
 }
 
 // sjob-svar:ymax
@@ -119,7 +118,7 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
   if ( sdet == "pdsp" ) {
     ichmod = 2560;
     ichcol = 1600;
-  } else if ( sdet == "iceberg3" ) {
+  } else if ( sdet.substr(0,7) == "iceberg" ) {
     ichmod = 1280;
     ichcol =  800;
   } else {
@@ -146,7 +145,7 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
     bool isInd = hnam.substr(0,2) == "uv";
     bool isCol = hnam.substr(0,2) == "zc";
     cout << myname << "Filling " << hnam << "(" << doGood << ", " << doBad << ")" << endl;
-    bool noisy = 0;
+    bool noisy = 1;
     for ( Index ivch=ivch1; ivch<ivch2; ++ivch ) {
       double xch, val;
       if ( pg->GetPoint(ivch, xch, val) != int(ivch) ) {
@@ -184,6 +183,9 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, strin
   } else if ( sdet == "iceberg3" ) {
     itpss.push_back(0);
     explab = "#bf{Iceberg} run 3";
+  } else if ( sdet == "iceberg4" ) {
+    itpss.push_back(0);
+    explab = "#bf{Iceberg} run 4";
   } else {
     cout << myname << "Invalid detector: " << sdet << endl;
     return 3;
