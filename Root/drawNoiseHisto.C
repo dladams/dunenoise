@@ -115,12 +115,16 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
   }
   int ichmod = 1;
   int ichcol = 0;
+  bool skipIbOdd = false;
+  bool skipIbEven = false;
   if ( sdet == "pdsp" ) {
     ichmod = 2560;
     ichcol = 1600;
   } else if ( sdet.substr(0,7) == "iceberg" ) {
     ichmod = 1280;
     ichcol =  800;
+    if ( sdet.find("odd") != string::npos ) skipIbEven = true;
+    if ( sdet.find("even") != string::npos ) skipIbOdd = true;
   } else {
     cout << myname << "Invalid detector: " << sdet << endl;
     return 3;
@@ -135,6 +139,7 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
   // Fetch graph.
   TGraph* pg = pmanin->graph();
   int nvch = pg->GetN();
+  IcebergHelper ibh;
   for ( HistMap::value_type ihst : hsts ) {
     string hnam = ihst.first;
     TH1* phf = ihst.second;
@@ -145,7 +150,7 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
     bool isInd = hnam.substr(0,2) == "uv";
     bool isCol = hnam.substr(0,2) == "zc";
     cout << myname << "Filling " << hnam << "(" << doGood << ", " << doBad << ")" << endl;
-    bool noisy = 1;
+    bool noisy = 0;
     for ( Index ivch=ivch1; ivch<ivch2; ++ivch ) {
       double xch, val;
       if ( pg->GetPoint(ivch, xch, val) != int(ivch) ) {
@@ -153,6 +158,8 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
         continue;
       }
       Index ich = xch + 0.1;
+      if ( skipIbOdd && ibh.isOdd(ich) ) continue;
+      if ( skipIbEven && !ibh.isOdd(ich) ) continue;
       Index ichred = ich%ichmod;
       if ( isInd && ichred >= ichcol ) continue;
       if ( isCol && ichred <  ichcol ) continue;
@@ -183,9 +190,24 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, strin
   } else if ( sdet == "iceberg3" ) {
     itpss.push_back(0);
     explab = "#bf{Iceberg} run 3";
-  } else if ( sdet == "iceberg4" ) {
+  } else if ( sdet == "iceberg4" || sdet == "iceberg4a" ) {
     itpss.push_back(0);
-    explab = "#bf{Iceberg} run 4";
+    explab = "#bf{Iceberg} run 4a";
+  } else if ( sdet == "iceberg4b" ) {
+    itpss.push_back(0);
+    explab = "#bf{Iceberg} run 4b";
+  } else if ( sdet == "iceberg4aodd" ) {
+    itpss.push_back(0);
+    explab = "#bf{Iceberg} run 4a odd";
+  } else if ( sdet == "iceberg4bodd" ) {
+    itpss.push_back(0);
+    explab = "#bf{Iceberg} run 4b odd";
+  } else if ( sdet == "iceberg4aeven" ) {
+    itpss.push_back(0);
+    explab = "#bf{Iceberg} run 4a even";
+  } else if ( sdet == "iceberg4beven" ) {
+    itpss.push_back(0);
+    explab = "#bf{Iceberg} run 4b even";
   } else {
     cout << myname << "Invalid detector: " << sdet << endl;
     return 3;
@@ -361,8 +383,15 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, strin
   } else {
     string srun1 = slab.substr(0, ipos);
     string srun2 = slab.substr(ipos+1);
+    string::size_type jpos = srun2.find("-");
+    string srune;
+    if ( jpos != string::npos ) {
+      srune = srun2.substr(jpos + 1);
+      srun2 = srun2.substr(0, jpos);
+    }
     while ( srun2.size() && srun2[0] == '0' ) srun2 = srun2.substr(1);
     slab = "Runs " + srun1 + " - " + srun2;
+    if ( srune.size() ) slab += " (" + srune + ")";
   }
   labs.push_back(new TLatex(xlab, ylab, slab.c_str()));
   // Draw.

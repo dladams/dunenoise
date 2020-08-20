@@ -91,6 +91,8 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, string spatin, string sxv
   ppad->setRangeY(0, ymax);
   ppad->showGraphOverflow();
   ppad->setTitle(sttl);
+  // User must provide decorateNoiseVsTime(TPadManipulator&)
+  decorateNoiseVsTime(*ppad);
   //ppad->centerAxisTitles();
   ppad->print(fnamout);
   cout << myname << "Printed " << fnamout << endl;

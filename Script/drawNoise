@@ -18,12 +18,14 @@
 #   CRVS - Curves to incude on each plot, e.g. "zcGood-uvGood"
 
 SFRUN=$1
+SEL=$2
 SUPFILE=./setupPlots.sh
 if [ -z "$SFRUN" ]; then
-  echo Usage: $0 RUN
-  echo "    or $0 RUN1-RUN2"
+  echo Usage: $0 RUN [SEL]
+  echo "    or $0 RUN1-RUN2 [SEL]"
   echo "  e.g. $0 5240"
   echo "  In/out directories and more taken from $SUPFILE"
+  echo "  For iceberg4, SEL can be odd or even"
   exit 0
 fi
 ISGROUP=
@@ -65,6 +67,11 @@ if [ -z "$CRVS" ]; then
   echo Please define CRVS, e.g. in $SUPFILE
   exit 2
 fi
+if [ -n "$SEL" ]; then
+  SDET=${SDET}$SEL
+  SUMNAM=${SUMNAM}$SEL
+fi
+echo SDET: $SDET
 echo DIRPAT: $DIRPAT
 echo SUMNAM: $SUMNAM
 SPRINT="png,pdf,tpad"

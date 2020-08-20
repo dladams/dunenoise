@@ -17,7 +17,7 @@
 # Use ib4taiNoiseVsChan to produce the corresponding plots before CNR.
 
 #include "run_dataprep_iceberg.fcl"
-#include "setIceberg4.fcl"
+##include "setIceberg4.fcl"
 #include "dunenoise_tools.fcl"
 
 # Set the dataprep reco sequence.
@@ -31,6 +31,12 @@ services.RawDigitPrepService.AdcChannelToolNames: [
   ibmet_adcChannelNotSignalRmsPlotter,
   ibmet_adcChannelNotSignalRms50Plotter
 ]
+tools.ibmet_adcChannelNotSignalRmsPlotter.PlotFileName: "chmet_nsgrms_%CRNAME%_run%0RUN%_cnr.{png,tpad}"
+tools.ibmet_adcChannelNotSignalRms50Plotter.PlotFileName: "chmet_nsgrms50_%CRNAME%_run%0RUN%_cnr.{png,tpad}"
+tools.ibmet_adcChannelNotSignalRmsPlotter.HistTitle: "Not-signal sample RMS for run %RUN% %CRLABEL% after CNR"
+tools.ibmet_adcChannelNotSignalRms50Plotter.HistTitle: "Not-signal 50-sample RMS for run %RUN% %CRLABEL% after CNR"
+tools.ibmet_adcChannelUtcRangePlotter.PlotFileName: "chmet_utcran_%CRNAME%_run%0RUN%_cnr.{png,tpad}"
+tools.ibmet_adcChannelUtcRangePlotter.HistTitle: "ADC UTC range for Iceberg run %RUN% after CNR"
 
 # Add diagnostic plots of the signal-finder metrics.
 #include "addIbNsfMetricPlots.fcl"

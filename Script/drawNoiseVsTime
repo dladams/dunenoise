@@ -10,7 +10,7 @@
 # The working directory must contain the file setupPlots.sh and it or the
 # environment must define the following variables:
 #
-#   SUNNAM - Base for the noise summary output plot file names.
+#   SUMNAM - Base for the noise summary output plot file names.
 
 RUN1=$1
 RUN2=$2
