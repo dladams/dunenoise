@@ -18,16 +18,19 @@
 #   CRVS - Curves to incude on each plot, e.g. "zcGood-uvGood"
 
 SFRUN=$1
-SEL=$2
+EVT=$2
+SEL=$3
 SUPFILE=./setupPlots.sh
 if [ -z "$SFRUN" ]; then
-  echo Usage: $0 RUN [SEL]
-  echo "    or $0 RUN1-RUN2 [SEL]"
+  echo Usage: $0 RUN [EVT] [SEL]
+  echo "    or $0 RUN1-RUN2 0 [SEL]"
   echo "  e.g. $0 5240"
   echo "  In/out directories and more taken from $SUPFILE"
   echo "  For iceberg4, SEL can be odd or even"
   exit 0
 fi
+if [ -z "$EVT" ]; then EVT=0; fi
+SFEVT=
 ISGROUP=
 if echo $SFRUN | grep - 1>/dev/null 2>/dev/null; then ISGROUP=true; fi
 if [ ! -r $SUPFILE ]; then
@@ -43,13 +46,23 @@ if [ -n "$ISGROUP" ]; then
     exit 2
   fi
   DIRPAT=$GRPPAT
-else
+elif [ $EVT -eq 0 ] 2>/dev/null; then
   while [ ${#SFRUN} -lt 6 ]; do SFRUN=0$SFRUN; done
   echo Processing run $SFRUN
   if [ -z "$DIRPAT" ]; then
     echo Please define DIRPAT, e.g. in $SUPFILE
     exit 2
   fi
+else
+  while [ ${#SFRUN} -lt 6 ]; do SFRUN=0$SFRUN; done
+  SFEVT=$EVT
+  while [ ${#SFEVT} -lt 6 ]; do SFEVT=0$SFEVT; done
+  echo Processing run $SFRUN event $SFEVT
+  if [ -z "$DIRPAT" ]; then
+    echo Please define EVTPAT, e.g. in $SUPFILE
+    exit 2
+  fi
+  DIRPAT=$EVTPAT
 fi
 if [ -z "$SUMNAM" ]; then
   echo Please define SUMNAM, e.g. in $SUPFILE
@@ -67,6 +80,14 @@ if [ -z "$CRVS" ]; then
   echo Please define CRVS, e.g. in $SUPFILE
   exit 2
 fi
+if ! [ $EVT -eq 0 ] 2>/dev/null; then
+  OUTDIR=$(echo $SUMNAM | sed "s/%RUN%/$SFRUN/g")
+  if [ ! -r $OUTDIR ]; then
+    echo Creating output directory $OUTDIR
+    mkdir $OUTDIR;
+  fi
+  SUMNAM=$OUTDIR/event$SFEVT
+fi
 if [ -n "$SEL" ]; then
   SDET=${SDET}$SEL
   SUMNAM=${SUMNAM}$SEL
@@ -75,4 +96,4 @@ echo SDET: $SDET
 echo DIRPAT: $DIRPAT
 echo SUMNAM: $SUMNAM
 SPRINT="png,pdf,tpad"
-root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseHisto.C("'$DIRPAT'", "'$SUMNAM'", "'$PLOTS'"   , "'$SFRUN'", "'$SDET'", "'$CRVS'", "'$SPRINT'")'
+root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseHisto.C("'$DIRPAT'", "'$SUMNAM'", "'$PLOTS'"   , "'$SFRUN'", "'$SFEVT'", "'$SDET'", "'$CRVS'", "'$SPRINT'")'

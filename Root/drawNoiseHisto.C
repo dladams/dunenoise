@@ -91,7 +91,7 @@ struct NoiseSpecifier {
   string recvar() const { return sreco + "-" + svar; }
 };
 
-int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string sdet, int itps, HistMap& hsts) {
+int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string sfevt, string sdet, int itps, HistMap& hsts) {
   string myname = "fillFromTps: ";
   int iapas[6] = {3, 5, 2, 6, 1, 4};
   int iapa = iapas[itps];
@@ -103,6 +103,7 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
   string sfrun2 = sfrun.substr(ipos+1);
   StringManipulator sman(filpat, true);
   sman.replace("%RUN%", sfrun);
+  sman.replace("%EVT%", sfevt);
   sman.replace("%RUN1%", sfrun1);
   sman.replace("%RUN2%", sfrun2);
   sman.replace("%REC%", nspec.sreco);
@@ -174,7 +175,7 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
 }
 
 // Create a pad for one pair of histograms.
-int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, string dopt,
+int plotNoiseHisto(string filpat, string sspec, string sfrun, string sfevt, string sdet, string dopt,
                    TPadManipulator* pman, ostream& txtout) {
   string myname = "plotNoiseHisto: ";
   cout << myname << filpat << ", " << sspec << endl;
@@ -292,7 +293,7 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, strin
     hsts[hnam] = ph;
   }
   for ( int itps : itpss ) {
-    int rstat = fillFromTps(filpat, nspec, sfrun, sdet, itps, hsts);
+    int rstat = fillFromTps(filpat, nspec, sfrun, sfevt, sdet, itps, hsts);
     if ( rstat ) {
       cout << myname << "Exiting because fillFromTps returned " << rstat << endl;
       return 2;
@@ -394,6 +395,15 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, strin
     if ( srune.size() ) slab += " (" + srune + ")";
   }
   labs.push_back(new TLatex(xlab, ylab, slab.c_str()));
+  if ( sfevt.size() ) {
+    ylab -= dylab;
+    if ( sfevt.find("-") != string::npos ) {
+      slab = "Events " + sfevt;
+    } else {
+      slab = "Event " + sfevt;
+    }
+    labs.push_back(new TLatex(xlab, ylab, slab.c_str()));
+  }
   // Draw.
   if ( doMan ) {
     // Set margins and label sizes.
@@ -456,7 +466,7 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sdet, strin
 // sdet is pdsp or iceberg3
 // scurves is which curves to draw for each plot, e.g. "zcGood-uvGood"
 // plotSufs is the tpad suffix for output plots
-TPadManipulator* drawNoiseHisto(string filpat, string outnam, string a_sspec, string sfrun,
+TPadManipulator* drawNoiseHisto(string filpat, string outnam, string a_sspec, string sfrun, string sfevt,
                                 string sdet, string scurves, string plotSufs =".png") {
   string myname = "drawNoiseHisto: ";
   StringManipulator sman(a_sspec, true);
@@ -494,7 +504,7 @@ TPadManipulator* drawNoiseHisto(string filpat, string outnam, string a_sspec, st
     cout << myname << sspec << endl;
     NoiseSpecifier nspec(sspec);
     TPadManipulator* pman = nspec.doPlot ? pmantop->man(iman++) : nullptr;
-    int pstat = plotNoiseHisto(filpat, sspec, sfrun, sdet, scurves, pman, txtout);
+    int pstat = plotNoiseHisto(filpat, sspec, sfrun, sfevt, sdet, scurves, pman, txtout);
     if ( pstat ) {
       cout << myname << "Pad fill returned error " <<  pstat << endl;
       delete pmantop;

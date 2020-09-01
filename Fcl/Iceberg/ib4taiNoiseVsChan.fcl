@@ -1,4 +1,4 @@
-# ibtaiNoiseVsChan.fcl
+# ib4taiNoiseVsChan.fcl
 #
 # David Adams
 # May 2020
@@ -7,12 +7,12 @@
 # vs. channel for Iceberg before CNR.
 #
 # E.g. run with
-#   duneproc ibtaiNoiseVsChan iceberg005044
+#   duneproc ib4taiNoiseVsChan/setIceberg4b iceberg006103
 # and the run directory
-#   ibtaiNoiseVsChan/iceberg005044
+#   ib4taiNoiseVsChan/setIceberg4b/iceberg006103
 # will have the noise plots
-#   chmet_nsgrms_all_run005044.png
-#   chmet_nsgrms50_all_run005044.png
+#   chmet_nsgrms_all_run006103.png
+#   chmet_nsgrms50_all_run006103.png
 #   
 # Use ibcnrNoiseVsChan to produce the corresponding plots after CNR.
 
@@ -29,7 +29,8 @@ services.RawDigitPrepService.AdcChannelToolNames: [
   pedmetNoiseSignalFinderIb3,
   ibmet_adcChannelUtcRangePlotter,
   ibmet_adcChannelNotSignalRmsPlotter,
-  ibmet_adcChannelNotSignalRms50Plotter
+  ibmet_adcChannelNotSignalRms50Plotter,
+  ibNfemb
 ]
 tools.ibmet_adcChannelNotSignalRmsPlotter.PlotFileName: "chmet_nsgrms_%CRNAME%_run%0RUN%_tai.{png,tpad}"
 tools.ibmet_adcChannelNotSignalRms50Plotter.PlotFileName: "chmet_nsgrms50_%CRNAME%_run%0RUN%_tai.{png,tpad}"
