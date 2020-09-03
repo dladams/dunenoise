@@ -26,7 +26,7 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, int nevt, string spatin, 
     pgrmax->GetXaxis()->SetTitle("Run number");
   }
   pgrmax->GetYaxis()->SetTitle("Noise [e]");
-  TLegend* pleg = new TLegend(0.10, 0.75, 0.25, 0.95);
+  TLegend* pleg = new TLegend(0.10, 0.70, 0.25, 0.90);
   pleg->SetBorderSize(0);
   pleg->SetFillStyle(0);
   pleg->SetMargin(0.10);  // Fraction used for symbol
