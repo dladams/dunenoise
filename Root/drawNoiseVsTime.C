@@ -26,17 +26,18 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, int nevt, string spatin, 
     pgrmax->GetXaxis()->SetTitle("Run number");
   }
   pgrmax->GetYaxis()->SetTitle("Noise [e]");
-  TLegend* pleg = new TLegend(0.80, 0.15, 0.95, 0.35);
+  TLegend* pleg = new TLegend(0.10, 0.75, 0.25, 0.95);
   pleg->SetBorderSize(0);
   pleg->SetFillStyle(0);
   pleg->SetMargin(0.10);  // Fraction used for symbol
+  cout << myname << "Processing runs " << irun1 << " to " << irun2 << endl;
   for ( int irun=irun1; irun<=irun2; ++irun ) {
     string srun = to_string(irun);
     while ( srun.size() < 6 ) srun = "0" + srun;
     if ( irun == irun1 ) sruns = srun;
     if ( irun == irun2 && irun !=irun1 ) sruns += "-" + srun;
     int ievt1 = 1;
-    int ievt2 = nevt ? nevt : 0;
+    int ievt2 = nevt ? nevt : 1;
     float xpt = irun;
     for ( int ievt=ievt1; ievt<=ievt2; ++ievt ) {
       string srune = srun;
