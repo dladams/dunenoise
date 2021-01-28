@@ -21,11 +21,8 @@
 #include "dunenoise_tools.fcl"
 
 # Set the dataprep reco sequence.
-services.RawDigitPrepService.AdcChannelToolNames: @local::ib4_dataprep_tools_calib_tail
-
-# Set the signal finder: 4-sigma, min 200 e
-services.RawDigitPrepService.AdcChannelToolNames: [
-  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+services.RawDigitPrepService.ToolNames: [
+  @sequence::ib4_dataprep_tools_calib_tailped,
   pedmetNoiseSignalFinderIb3,
   ibmet_adcChannelUtcRangePlotter,
   ibmet_adcChannelNotSignalRmsPlotter,

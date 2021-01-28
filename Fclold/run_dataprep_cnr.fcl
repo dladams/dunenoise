@@ -7,8 +7,8 @@
 
 #include "run_dataprep_tai.fcl"
 
-services.RawDigitPrepService.AdcChannelToolNames: [
-  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+services.RawDigitPrepService.ToolNames: [
+  @sequence::services.RawDigitPrepService.ToolNames
   , "pdsp_fembNoiseRemovalKe"        # Remove high frequency noise and coherent noise
 
 ]

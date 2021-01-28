@@ -6,8 +6,8 @@
 # Extend dataprep to add a splitter that splits data view "noise" into
 # regions with 1000 ticks and records then on view "splitnoise".
 
-services.RawDigitPrepService.AdcChannelToolNames: [
-  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+services.RawDigitPrepService.ToolNames: [
+  @sequence::services.RawDigitPrepService.ToolNames
   , adcSplit
 ]
 

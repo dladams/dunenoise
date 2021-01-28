@@ -1,5 +1,5 @@
-services.RawDigitPrepService.AdcChannelToolNames: [
-  @sequence::services.RawDigitPrepService.AdcChannelToolNames
+services.RawDigitPrepService.ToolNames: [
+  @sequence::services.RawDigitPrepService.ToolNames
   , adcKeepAllSignalFinder        # Keep all ticks
   , adcFFT
   , adcPlotDftTickPowerLog

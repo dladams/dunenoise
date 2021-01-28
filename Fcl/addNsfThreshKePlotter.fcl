@@ -10,8 +10,8 @@ tools.pdtps_nsfThresh.MetricLabel: "Threshold [ke]"
 tools.pdtps_nsfNoise.MetricMax: 0.5
 tools.pdtps_nsfNoise.MetricLabel: "Noise [ke/tick]"
 
-services.RawDigitPrepService.AdcChannelToolNames: [
-  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+services.RawDigitPrepService.ToolNames: [
+  @sequence::services.RawDigitPrepService.ToolNames,
   pdtps_nsfThresh,
   pdtps_nsfNoise,
   pdtps_nsfSigFrac

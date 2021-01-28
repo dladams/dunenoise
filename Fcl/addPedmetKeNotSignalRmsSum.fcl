@@ -11,8 +11,8 @@
 #   ADC tail removal
 #   correlated noise subtraction with internal ROI finding
 
-services.RawDigitPrepService.AdcChannelToolNames: [
-  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+services.RawDigitPrepService.ToolNames: [
+  @sequence::services.RawDigitPrepService.ToolNames,
   "pedmetSignalFinderKe",       # Find signal
   "pdtps_adcChannelSignalFractionPlotter",
   "pdtps_adcChannelNotSignalRmsPlotter",

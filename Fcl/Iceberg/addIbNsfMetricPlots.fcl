@@ -5,8 +5,8 @@
 #
 # Add the Iceberg metric plots for the noise signal finder at ke scale.
 
-services.RawDigitPrepService.AdcChannelToolNames: [
-  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+services.RawDigitPrepService.ToolNames: [
+  @sequence::services.RawDigitPrepService.ToolNames,
   ibmet_nsfThresh,
   ibmet_nsfNoise,
   ibmet_nsfSigFrac

@@ -19,11 +19,11 @@
 #include "pdsp_dunenoise_tools.fcl"
 
 # Set the dataprep reco sequence.
-services.RawDigitPrepService.AdcChannelToolNames: @local::protodune_dataprep_tools_calib_tail
+services.RawDigitPrepService.ToolNames: @local::protodune_dataprep_tools_calib_tail
 
 # Set the signal finder: 4-sigma, min 200 e
-services.RawDigitPrepService.AdcChannelToolNames: [
-  @sequence::services.RawDigitPrepService.AdcChannelToolNames,
+services.RawDigitPrepService.ToolNames: [
+  @sequence::services.RawDigitPrepService.ToolNames,
   pedmetNoiseSignalFinderKe,
   notRoiSlicer,
   adcSplit2000,

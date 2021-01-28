@@ -14,7 +14,7 @@
 #include "run_dataprep.fcl"
 #include "pedmetSignalFinder.fcl"
 
-services.RawDigitPrepService.AdcChannelToolNames: [
+services.RawDigitPrepService.ToolNames: [
   "digitReader",
   "pd_adcPedestalFit",
   "adcSampleCalibration",       # Subtract pedestal, apply ke calibration
