@@ -12,29 +12,56 @@
 #
 #   SUMNAM - Base for the noise summary output plot file names.
 
-RUN1=$1
-RUN2=$2
-NEVT=$3
-NOISE=$4   # nsgrms, nsgrms50, ...
-YMAX=$5
-MEDIAN=$6  # true to plot median instead of mean
-if [ -z "$5" ]; then MEDIAN=true; fi
+NOIOPT=$1
+RUN1=$2
+RUN2=$3
+NEVT=$4
+NOISE=$5   # nsgrms, nsgrms50, ...
+YMAX=$6
+MEDIAN=$7  # true to plot median instead of mean
+if [ -z "$MEDIAN" ]; then MEDIAN=true; fi
 if [ -z "$YMAX" ]; then
-  echo Usage: $0 RUN1 RUN2 NEVT NOISE YMAX MEDIAN
+  echo Usage: $0 NOIOPT RUN1 RUN2 NEVT NOISE YMAX MEDIAN
   echo "  NEVT > 0 plots NEVT individual events"
   echo "  NOISE = nsgrms, nsgrms50, ..."
   echo "  MEDIAN [true] = true/false to plot median/mean"
   exit 0
 fi
-source ./setupPlots.sh
-if [ -z "$SUMNAM" ]; then
-  echo Please define SUMNAM, e.g. in setupPlots.sh
-  exit 2
-fi
 SXVAR="run"
-SFIN=$SUMNAM.txt
+SFIN=tmpnvt/run%RUN%.txt
 echo "Run range: $RUN1 - $RUN2"
 echo "File pattern: $SFIN"
 echo "Noise type: $NOISE"
 SPRINT="png,pdf,tpad"
+rm -rf tmpnvt
+mkdir tmpnvt
+RUN=$RUN1
+SUPFILE=./setupNoise$NOIOPT.sh
+while [ $RUN -le $RUN2 ]; do
+  . $SUPFILE $RUN
+  if [ -n "$SUMNAM" ]; then
+    SFRUN=$RUN
+    while [ ${#SFRUN} -lt 6 ]; do SFRUN=0$SFRUN; done
+    SUMFIL=
+    BADFILS=
+    # 2021-03: SUMNAM can also be an array.
+    for SUMNAMVAL in ${SUMNAM[@]}; do
+      BASE=${SUMNAMVAL//%RUN%/$SFRUN}
+      SUMFIL=$BASE.txt
+      if [ -r $SUMFIL ]; then
+        break;
+        BADFILS=
+      else
+        BADFILS="$BADFILS $SUMFIL"
+        SUMFIL=
+      fi
+    done
+    if [ -n "$SUMFIL" ]; then
+      cp $SUMFIL tmpnvt/run$SFRUN.txt
+    else
+      echo Not found: "$BADFILS"
+    fi
+    RUN=$(($RUN+1))
+  fi
+done
 root.exe -b -q '$DUNENOISE_DIR/root/drawNoiseVsTime.C('$RUN1', '$RUN2', '$NEVT', "'$SFIN'", "'$SXVAR'", "'$NOISE'", '$MEDIAN', '$YMAX')'

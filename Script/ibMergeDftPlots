@@ -2,25 +2,37 @@
 
 RUN=$1
 FMAX=$2
+SPLOTS=$3
 
-if [ -z "$1" -o "$1" = "-h" ]; then
-  echo "Usage: $0 RUN [FMAX]"
-  echo "   or: $0 RUN1-RUN2 [FMAX]"
+if [ -z "$3" -o "$1" = "-h" ]; then
+  echo "Usage: $0 RUN FMAX SPLOTS"
+  echo "   or: $0 RUN1-RUN2 FMAX SPLOTS"
+  echo "       SPLOTS = tai:cnr, cal:cnr or ped:pnr"
   exit 0
 fi
 
-# RECO = tai, cnr
+if [ -z "$SPLOTS" ]; then
+  SPLOTS=tai:cnr     # iceberg 3, 4
+fi
+
+SPER=$(ibRunPeriod $RUN)
+
+# RECO = tai, cnr, ped, pnr
 INPAT=ib"%RECO%NoiseDft"
-OUTPAT="plots-dft/dft%RUN%"
-if  [ -n "$FMAX" ]; then
+OUTPAT="plots-dft/dft-${SPLOTS}-%RUN%"
+if [ -n "$SPER" ]; then
+  INPAT="ib5%RECO%NoiseDft/setIceberg$SPER"
+fi
+
+if  [ -n "$FMAX" -a "$FMAX" != "." ]; then
   INPAT=$INPAT/ibsetDftFmax$FMAX
   OUTPAT=${OUTPAT}_fmax$FMAX
 fi
-if  [ echo $RUN | grep "-" 2>/dev/null 1>/dev/null ]; then
-  INPAT="$INPAT/iceberg%RUN%/dftpowt_run%RUN%.tpad"
-else
+if  echo $RUN | grep "-" 2>/dev/null 1>/dev/null; then
   INPAT="$INPAT/ibgroup%RUN%/dftpowt_run%RUN1%.tpad"
+else
+  INPAT="$INPAT/iceberg%RUN%/dftpowt_run%RUN%.tpad"
 fi
 OUTPAT="${OUTPAT}.{png,tpad}"
 
-root.exe -b -q '$DUNENOISE_DIR/root/ibMergeDftPlots.C("'$INPAT'", "'$RUN'", "'$OUTPAT'")'
+root.exe -b -q '$DUNENOISE_DIR/root/ibMergeDftPlots.C("'$INPAT'", "'$RUN'", "'$OUTPAT'", "'$SPLOTS'")'

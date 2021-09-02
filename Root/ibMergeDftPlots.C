@@ -5,7 +5,7 @@
 //
 // Merge Iceberg before and after CNR plots.
 
-TPadManipulator* ibMergeDftPlots(string infilPat, string srun, string outfilPat) {
+TPadManipulator* ibMergeDftPlots(string infilPat, string srun, string outfilPat, string splots) {
   const string myname = "ibMergeDftPlots: ";
   using Index = unsigned int;
   LineColors lc;
@@ -22,10 +22,24 @@ TPadManipulator* ibMergeDftPlots(string infilPat, string srun, string outfilPat)
     while ( sfrun2.size() < 6 ) sfrun2 = "0" + sfrun2;
     sfrun = sfrun1 + "-" + sfrun2;
   }
-  vector<string> srecs = {"tai", "cnr"};
+  vector<string> srecs = {"tai", "cnr"};     // Iceberg 4
+  vector<string> labs = {"Before CNR", "After CNR", ""};
+  vector<string> srecs5cal = {"cal", "cnr"};
+  vector<string> labs5cal = {"Calibrated", "After CNR", ""};
+  vector<string> srecs5ped = {"ped", "pnr"};
+  vector<string> labs5ped = {"After PUP", "After CNR", ""};
+  if ( splots == "cal:cnr" ) {
+    srecs = srecs5cal;
+    labs = labs5cal;
+  } else if ( splots == "ped:pnr" ) {
+    srecs = srecs5ped;
+    labs = labs5ped;
+  } else if ( splots != "tai:cnr" ) {
+    cout << myname << "Invalid splots: " << splots << endl;
+    return nullptr;
+  }
   vector<int> icols = {lc.blue(), lc.red()};
   vector<int> lwids = {3, 2};
-  vector<string> labs = {"Before CNR", "After CNR", ""};
   vector<float> ylabs = {0.73, 0.66};
   vector<string> sttls = {"#bf{DUNE:Iceberg}", "", "Run " + srun};
   vector<float> yttls = {0.40, 0.34, 0.28};
@@ -50,7 +64,8 @@ TPadManipulator* ibMergeDftPlots(string infilPat, string srun, string outfilPat)
     TPadManipulator* pman = TPadManipulator::read(sfilin);
     if ( pman == nullptr ) {
       cout << myname << "Unable to open " << sfilin << endl;
-      return nullptr;
+      //return nullptr;
+      continue;
     }
     string hopt = irec ? "hist same" : "hist";
     for ( Index iman=0; iman<nman; ++iman ) {
@@ -119,6 +134,7 @@ TPadManipulator* ibMergeDftPlots(string infilPat, string srun, string outfilPat)
   }
   StringManipulator sman(outfilPat, true);
   sman.replace("%RUN%", srun);
+  sman.replace(":", "_");
   string sfilout = sman.str();
   cout << myname << "Printing " << sfilout << endl;
   pmanout->print(sfilout);

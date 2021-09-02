@@ -4,7 +4,7 @@ install(FILES ApaWirePlot.h TYPE INCLUDE)
 
 # Build a tool.
 add_library(ApaWirePlot_tool SHARED ApaWirePlot_tool.cc)
-find_library(libDuneCommon NAMES dune_DuneCommon)
+find_library(libDuneCommon NAMES dune_DuneCommon_Utility)
 find_library(libDuneGeometry NAMES dune_Geometry)
 target_include_directories(ApaWirePlot_tool BEFORE PRIVATE ../Interface)
 target_link_libraries(ApaWirePlot_tool ${tool_lib_list})

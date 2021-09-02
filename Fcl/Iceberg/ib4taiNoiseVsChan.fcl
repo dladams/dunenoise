@@ -22,9 +22,10 @@
 
 # Set the dataprep reco sequence.
 services.RawDigitPrepService.ToolNames: [
-  @sequence::ib4_dataprep_tools_calib_tailped,
+  @sequence::data.ib4_dataprep_seqs.calib_tailped,
   pedmetNoiseSignalFinderIb3,
   ibmet_adcChannelUtcRangePlotter,
+  ibmet_adcChannelSampleRmsPlotter,
   ibmet_adcChannelNotSignalRmsPlotter,
   ibmet_adcChannelNotSignalRms50Plotter,
   ibNfemb

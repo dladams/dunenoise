@@ -91,7 +91,7 @@ struct NoiseSpecifier {
   string recvar() const { return sreco + "-" + svar; }
 };
 
-int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string sfevt, string sdet, int itps, HistMap& hsts) {
+string fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string sfevt, string sdet, int itps, HistMap& hsts) {
   string myname = "fillFromTps: ";
   int iapas[6] = {3, 5, 2, 6, 1, 4};
   int iapa = iapas[itps];
@@ -111,13 +111,15 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
   string infile = sman.str();
   string sviews[4] = {"u", "v", "z", "c"};
   if ( gSystem->AccessPathName(infile.c_str()) != 0 ) {
-    cout << myname << "File not found: " << infile << endl;
-    return 1;
+    string msg = "File not found: " + infile;
+    cout << myname << "ERROR: " << msg << endl;
+    return msg;
   }
   int ichmod = 1;
   int ichcol = 0;
   bool skipIbOdd = false;
   bool skipIbEven = false;
+  Index nchaMin = 200;
   if ( sdet == "pdsp" ) {
     ichmod = 2560;
     ichcol = 1600;
@@ -127,55 +129,121 @@ int fillFromTps(string filpat, const NoiseSpecifier& nspec, string sfrun, string
     if ( sdet.find("odd") != string::npos ) skipIbEven = true;
     if ( sdet.find("even") != string::npos ) skipIbOdd = true;
   } else {
-    cout << myname << "Invalid detector: " << sdet << endl;
-    return 3;
+    string msg = "Invalid detector: " + sdet;
+    cout << myname << "ERROR: " << msg << endl;
+    return msg;
   }
   cout << myname << "===== Processing " << infile << endl;
-  const TPadManipulator* pmanin = TPadManipulator::read(infile);
-  if ( pmanin == nullptr ) {
-    cout << myname << "ERROR: Unable to read pad file:" << endl;
-    cout << myname << "  " << infile << endl;
-    return 1;
-  }
-  // Fetch graph.
-  TGraph* pg = pmanin->graph();
-  int nvch = pg->GetN();
-  IcebergHelper ibh;
-  for ( HistMap::value_type ihst : hsts ) {
-    string hnam = ihst.first;
-    TH1* phf = ihst.second;
-    bool doBad = hnam.find("Bad") != string::npos;
-    bool doGood = hnam.find("Good") != string::npos;
-    Index ivch1 = 0;
-    Index ivch2 = nvch;
-    bool isInd = hnam.substr(0,2) == "uv";
-    bool isCol = hnam.substr(0,2) == "zc";
-    cout << myname << "Filling " << hnam << "(" << doGood << ", " << doBad << ")" << endl;
-    bool noisy = 0;
-    for ( Index ivch=ivch1; ivch<ivch2; ++ivch ) {
-      double xch, val;
-      if ( pg->GetPoint(ivch, xch, val) != int(ivch) ) {
-        cout << "ERROR: Point not found: " << ivch << endl;
-        continue;
+  bool isRoiTree = infile.find("adcrois.root") != string::npos;
+  if ( isRoiTree ) {
+    TFile* pfil = TFile::Open(infile.c_str());
+    if ( pfil == nullptr || ! pfil->IsOpen() ) {
+      string msg = "Unable to open " + infile;
+      cout << myname << "ERROR: " << msg << endl;
+      return msg;
+    }
+    TTree* ptre = dynamic_cast<TTree*>(pfil->Get("adcrois"));
+    if ( ptre == nullptr ) {
+      string msg = "Unable to find tree adcrois.";
+      cout << myname << "ERROR: " << msg << endl;
+      return msg;
+    }
+    for ( HistMap::value_type ihst : hsts ) {
+      string hnam = ihst.first;
+      TH1* phf = ihst.second;
+      bool doBad = hnam.find("Bad") != string::npos;
+      bool doGood = hnam.find("Good") != string::npos;
+      bool isInd = hnam.substr(0,2) == "uv";
+      bool isCol = hnam.substr(0,2) == "zc";
+      StringManipulator smvar(nspec.svar);
+      smvar.replace("nsgrms", "nsgRms");
+      smvar.replace("utcran", "time");
+      string svar = "channel:" + smvar.str();
+      string ssel = smvar.str() + ">0";
+      if ( doGood ) ssel += "&&status==0";
+      if ( doBad  ) ssel += "&&status!=0";
+      if ( isInd  ) ssel += "&&(channel%" + to_string(ichmod) + ")<"  + to_string(ichcol);
+      if ( isCol  ) ssel += "&&(channel%" + to_string(ichmod) + ")>=" + to_string(ichcol);
+      if ( ssel.substr(0,2) == "&&" ) ssel = ssel.substr(2);
+      // Add cut on activity.
+      string sthr = isInd ? "0.4" : "0.8";
+      ssel += "&&samRms<" + sthr;
+      cout << myname << "Filling " << hnam << "(" << doGood << ", " << doBad << ")" << endl;
+      cout << myname << "   Variable: " << svar << endl;
+      cout << myname << "  Selection: " << ssel << endl;
+      int nent = ptre->Draw(svar.c_str(), ssel.c_str(), "goff");
+      double* pxcha = ptre->GetV1();
+      double* pvar = ptre->GetV2();
+      // Collect the noise measurements for each channel;
+      std::map<Index, std::vector<double>> chvals;
+      for ( Index ient=0; ient<nent; ++ient ) {
+        Index icha = pxcha[ient] + 0.01;
+        chvals[icha].push_back(pvar[ient]);
       }
-      Index ich = xch + 0.1;
-      if ( skipIbOdd && ibh.isOdd(ich) ) continue;
-      if ( skipIbEven && !ibh.isOdd(ich) ) continue;
-      Index ichred = ich%ichmod;
-      if ( isInd && ichred >= ichcol ) continue;
-      if ( isCol && ichred <  ichcol ) continue;
-      bool isbad = isBad(ich);
-      if ( doGood && isbad ) continue;
-      if ( doBad && !isbad ) continue;
-      if ( noisy ) cout << ich << ": " << val << endl;
-      phf->Fill(val);
+      Index ncha = chvals.size();
+      if ( ncha < nchaMin ) {
+        string msg = "Too few channels: " + to_string(ncha) + " < " + to_string(nchaMin);
+        cout << myname << "ERROR: " << msg << endl;
+        return msg;
+      }
+      // Insert the average for each channel into the histogram.
+      for ( auto ival : chvals ) {
+        double sum = 0.0;
+        for ( float val : ival.second ) sum += val;
+        double avg = sum/double(ival.second.size());
+        phf->Fill(avg);
+      }
+      cout << myname << "  # ROIs selected: " << nent << endl;
+      cout << myname << "       # channels: " << ncha << endl;
+      cout << myname << "  Histogram count: " << phf->GetEntries() << endl;
+    }
+  } else {
+    const TPadManipulator* pmanin = TPadManipulator::read(infile);
+    if ( pmanin == nullptr ) {
+      string msg = "Unable to read pad file: " + infile;
+      cout << myname << "ERROR: " << msg << endl;
+      return msg;
+    }
+    // Fetch graph.
+    TGraph* pg = pmanin->graph();
+    int nvch = pg->GetN();
+    IcebergHelper ibh;
+    for ( HistMap::value_type ihst : hsts ) {
+      string hnam = ihst.first;
+      TH1* phf = ihst.second;
+      bool doBad = hnam.find("Bad") != string::npos;
+      bool doGood = hnam.find("Good") != string::npos;
+      Index ivch1 = 0;
+      Index ivch2 = nvch;
+      bool isInd = hnam.substr(0,2) == "uv";
+      bool isCol = hnam.substr(0,2) == "zc";
+      cout << myname << "Filling " << hnam << "(" << doGood << ", " << doBad << ")" << endl;
+      bool noisy = 0;
+      for ( Index ivch=ivch1; ivch<ivch2; ++ivch ) {
+        double xch, val;
+        if ( pg->GetPoint(ivch, xch, val) != int(ivch) ) {
+          cout << "ERROR: Point not found: " << ivch << endl;
+          continue;
+        }
+        Index ich = xch + 0.1;
+        if ( skipIbOdd && ibh.isOdd(ich) ) continue;
+        if ( skipIbEven && !ibh.isOdd(ich) ) continue;
+        Index ichred = ich%ichmod;
+        if ( isInd && ichred >= ichcol ) continue;
+        if ( isCol && ichred <  ichcol ) continue;
+        bool isbad = isBad(ich);
+        if ( doGood && isbad ) continue;
+        if ( doBad && !isbad ) continue;
+        if ( noisy ) cout << ich << ": " << val << endl;
+        phf->Fill(val);
+      }
     }
   }
-  return 0;
+  return "";
 }
 
 // Create a pad for one pair of histograms.
-int plotNoiseHisto(string filpat, string sspec, string sfrun, string sfevt, string sdet, string dopt,
+string plotNoiseHisto(string filpat, string sspec, string sfrun, string sfevt, string sdet, string dopt,
                    TPadManipulator* pman, ostream& txtout) {
   string myname = "plotNoiseHisto: ";
   cout << myname << filpat << ", " << sspec << endl;
@@ -190,28 +258,35 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sfevt, stri
     explab = "#bf{ProtoDUNE-SP}";
   } else if ( sdet == "iceberg3" ) {
     itpss.push_back(0);
-    explab = "#bf{Iceberg} run 3";
+    explab = "#bf{Iceberg 3}";
   } else if ( sdet == "iceberg4" || sdet == "iceberg4a" ) {
     itpss.push_back(0);
-    explab = "#bf{Iceberg} run 4a";
+    explab = "#bf{Iceberg 4a}";
   } else if ( sdet == "iceberg4b" ) {
     itpss.push_back(0);
-    explab = "#bf{Iceberg} run 4b";
+  } else if ( sdet == "iceberg4b" ) {
+    itpss.push_back(0);
+    explab = "#bf{Iceberg 4b}";
   } else if ( sdet == "iceberg4aodd" ) {
     itpss.push_back(0);
-    explab = "#bf{Iceberg} run 4a odd";
+    explab = "#bf{Iceberg 4a} odd";
   } else if ( sdet == "iceberg4bodd" ) {
     itpss.push_back(0);
-    explab = "#bf{Iceberg} run 4b odd";
+    explab = "#bf{Iceberg 4b} odd";
   } else if ( sdet == "iceberg4aeven" ) {
     itpss.push_back(0);
-    explab = "#bf{Iceberg} run 4a even";
+    explab = "#bf{Iceberg 4a} even";
   } else if ( sdet == "iceberg4beven" ) {
     itpss.push_back(0);
-    explab = "#bf{Iceberg} run 4b even";
+    explab = "#bf{Iceberg 4b} even";
+  } else if ( sdet.substr(0,8) == "iceberg5" ) {
+    itpss.push_back(0);
+    string sper = sdet.substr(7);
+    explab = "#bf{Iceberg " + sper + "}";
   } else {
-    cout << myname << "Invalid detector: " << sdet << endl;
-    return 3;
+    string msg = "Invalid detector: " + sdet;
+    cout << myname << "ERROR: " << msg << endl;
+    return msg;
   }
   HistMap hsts;
   NameMap descs;
@@ -243,8 +318,9 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sfevt, stri
     if ( isHnam ) {
       hnams.push_back(hnam);
     } else {
-      cout << myname << "Invalid channels specifier option: " << hnam << endl;
-      return 1;
+      string msg = "Invalid channels specifier option: " + hnam;
+      cout << myname << "ERROR: " << msg << endl;
+      return msg;
     }
     if ( ipos == string::npos ) break;
     srem = srem.substr(ipos+1);
@@ -276,9 +352,12 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sfevt, stri
   }
   string sttlSuf;
   if ( nspec.sreco == "cor" ) sttlSuf = " without CNR";
+  if ( nspec.sreco == "cal" ) sttlSuf = " calibrated";
+  if ( nspec.sreco == "ped" ) sttlSuf = " w/o CNR";
   if ( nspec.sreco == "tai" ) sttlSuf = " w/o CNR";
   if ( nspec.sreco == "cni" ) sttlSuf = " with CNR";
   if ( nspec.sreco == "cnr" ) sttlSuf = " with CNR";
+  if ( nspec.sreco == "pnr" ) sttlSuf = " with CNR";
   string sttlSum = sntype + " noise" + sttlSuf;
   sttlSum[0] = toupper(sttlSum[0]);
   int lineWidth = 2;
@@ -293,16 +372,16 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sfevt, stri
     hsts[hnam] = ph;
   }
   for ( int itps : itpss ) {
-    int rstat = fillFromTps(filpat, nspec, sfrun, sfevt, sdet, itps, hsts);
-    if ( rstat ) {
-      cout << myname << "Exiting because fillFromTps returned " << rstat << endl;
-      return 2;
+    string msg = fillFromTps(filpat, nspec, sfrun, sfevt, sdet, itps, hsts);
+    if ( msg.size() ) {
+      cout << myname << "(fillFromTps) ERROR: " << msg << endl;
+      return msg;
     }
   }
   cout << myname << "Histogram count: " << hsts.size() << endl;
   for ( HistMap::value_type ent : hsts ) {
     TH1* ph = ent.second;
-    cout << ph->GetName() << ": " << ph->GetEntries() << endl;
+    cout << myname << ph->GetName() << ": " << ph->GetEntries() << endl;
   }
   // Display and print plots.
   bool doMan = pman != nullptr;
@@ -445,7 +524,7 @@ int plotNoiseHisto(string filpat, string sspec, string sfrun, string sfevt, stri
     }
     pleg->Draw();
   }
-  return 0;
+  return "";
 }
 
 // Create a pad with multiple histograms.
@@ -504,9 +583,15 @@ TPadManipulator* drawNoiseHisto(string filpat, string outnam, string a_sspec, st
     cout << myname << sspec << endl;
     NoiseSpecifier nspec(sspec);
     TPadManipulator* pman = nspec.doPlot ? pmantop->man(iman++) : nullptr;
-    int pstat = plotNoiseHisto(filpat, sspec, sfrun, sfevt, sdet, scurves, pman, txtout);
-    if ( pstat ) {
-      cout << myname << "Pad fill returned error " <<  pstat << endl;
+    string msg = plotNoiseHisto(filpat, sspec, sfrun, sfevt, sdet, scurves, pman, txtout);
+    if ( msg.size() ) {
+      string com = "rm " + txtnam;
+      system(com.c_str());
+      string errnam = fnam + ".log";
+      ofstream errout(errnam.c_str());
+      cout << myname << msg << endl;
+      errout << msg << endl;
+      vector<ostream*> outs = {&cout, &errout};
       delete pmantop;
       return nullptr;
     }

@@ -1,3 +1,7 @@
 tools.ibPlotDftTickPower.XMin: 0.0
 tools.ibPlotDftTickPower.XMax: 200
 tools.ibPlotDftTickPower.NBinX: 100
+
+tools.ib5PlotDftTickPower.XMin: 0.0
+tools.ib5PlotDftTickPower.XMax: 200
+tools.ib5PlotDftTickPower.NBinX: 100

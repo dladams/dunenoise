@@ -70,6 +70,14 @@ tools.adcSplit1000: {
   DataView: "splitnoise"
 }
 
+tools.adcSplit0977: {
+  tool_type: AdcChannelSplitter
+  LogLevel: 1
+  Length:  977
+  DataPath: "noise"
+  DataView: "splitnoise"
+}
+
 #######################################################################
 # Metric summary plotters.
 #######################################################################
@@ -86,6 +94,16 @@ tools.ibmet_adcChannelSignalFractionPlotter.HistName: "hchsigfraccor%CRNAME%_ped
 tools.ibmet_adcChannelSignalFractionPlotter.HistTitle: "Tail-corrected signal fraction for run %RUN% %CRLABEL%"
 tools.ibmet_adcChannelSignalFractionPlotter.PlotFileName: "chmet_sigfraccor_%CRNAME%_run%0RUN%.png"
 tools.ibmet_adcChannelSignalFractionPlotter.RootFileName: "pedmets_%CRNAME%.root"
+
+# Sample RMS.
+tools.ibmet_adcChannelSampleRmsPlotter: @local::tools.ibmet_adcChannelPedestalNoisePlotter
+tools.ibmet_adcChannelSampleRmsPlotter.Metric: "samRms"
+tools.ibmet_adcChannelSampleRmsPlotter.MetricMax: 10.0
+tools.ibmet_adcChannelSampleRmsPlotter.MetricLabel: "Sample RMS [ke]"
+tools.ibmet_adcChannelSampleRmsPlotter.HistName: "hchsamrms%CRNAME%_ped_%0RUN%"
+tools.ibmet_adcChannelSampleRmsPlotter.HistTitle: "Sample RMS for run %RUN% %CRLABEL%"
+tools.ibmet_adcChannelSampleRmsPlotter.PlotFileName: "chmet_samrms_%CRNAME%_run%0RUN%.{png,tpad}"
+tools.ibmet_adcChannelSampleRmsPlotter.RootFileName: "pedmets_%CRNAME%.root"
 
 # Sample noise.
 tools.ibmet_adcChannelNotSignalRmsPlotter: @local::tools.ibmet_adcChannelPedestalNoisePlotter
@@ -107,6 +125,40 @@ tools.ibmet_adcChannelNotSignalRms50Plotter.HistName: "hchnsgrms50%CRNAME%_ped_%
 tools.ibmet_adcChannelNotSignalRms50Plotter.HistTitle: "Not-signal 50-sample RMS for run %RUN% %CRLABEL%"
 tools.ibmet_adcChannelNotSignalRms50Plotter.PlotFileName: "chmet_nsgrms50_%CRNAME%_run%0RUN%.{png,tpad}"
 tools.ibmet_adcChannelNotSignalRms50Plotter.RootFileName: "pedmets_%CRNAME%.root"
+
+# Integrated noise varying width, metric only.
+tools.dataprepMetricXXFiller: @local::tools.ibmet_adcChannelPedestalNoisePlotter
+tools.dataprepMetricXXFiller.Metric: "XX"
+tools.dataprepMetricXXFiller.MetricLabel: "XX label"
+tools.dataprepMetricXXFiller.MetricMax: 5.0
+tools.dataprepMetricXXFiller.MetricSummaryView: ""
+tools.dataprepMetricXXFiller.HistName: ""
+tools.dataprepMetricXXFiller.HistTitle: ""
+tools.dataprepMetricXXFiller.PlotFileName: ""
+tools.dataprepMetricXXFiller.RootFileName: ""
+
+tools.dataprepUtcRangeFiller: @local::tools.dataprepMetricXXFiller
+tools.dataprepUtcRangeFiller.Metric: "time"
+tools.dataprepSampleRmsFiller: @local::tools.dataprepMetricXXFiller
+tools.dataprepSampleRmsFiller.Metric: "samRms"
+tools.dataprepNotSignalRmsFiller: @local::tools.dataprepMetricXXFiller
+tools.dataprepNotSignalRmsFiller.Metric: "nsgRms"
+tools.dataprepNotSignalRms010Filler: @local::tools.dataprepMetricXXFiller
+tools.dataprepNotSignalRms010Filler.Metric: "nsgRms10"
+tools.dataprepNotSignalRms020Filler: @local::tools.dataprepMetricXXFiller
+tools.dataprepNotSignalRms020Filler.Metric: "nsgRms20"
+tools.dataprepNotSignalRms030Filler: @local::tools.dataprepMetricXXFiller
+tools.dataprepNotSignalRms030Filler.Metric: "nsgRms30"
+tools.dataprepNotSignalRms040Filler: @local::tools.dataprepMetricXXFiller
+tools.dataprepNotSignalRms040Filler.Metric: "nsgRms40"
+tools.dataprepNotSignalRms050Filler: @local::tools.dataprepMetricXXFiller
+tools.dataprepNotSignalRms050Filler.Metric: "nsgRms50"
+tools.dataprepNotSignalRms060Filler: @local::tools.dataprepMetricXXFiller
+tools.dataprepNotSignalRms060Filler.Metric: "nsgRms60"
+tools.dataprepNotSignalRms080Filler: @local::tools.dataprepMetricXXFiller
+tools.dataprepNotSignalRms080Filler.Metric: "nsgRms80"
+tools.dataprepNotSignalRms100Filler: @local::tools.dataprepMetricXXFiller
+tools.dataprepNotSignalRms100Filler.Metric: "nsgRms100"
 
 #######################################################################
 # DFT power plotters.
@@ -131,3 +183,7 @@ tools.ibPlotDftTickPower.HistSummaryTitles: [
 ]
 tools.ibPlotDftTickPower.PlotSummaryNames: ["dftpowt_run%0RUN%.{png,tpad}", ""]
 
+tools.ib5PlotDftTickPower: @local::tools.ibPlotDftTickPower
+tools.ib5PlotDftTickPower.SampleFreq: 1953.125
+tools.ib5PlotDftTickPower.XMax: 1000.0
+tools.ib5PlotDftTickPower.ChannelSelection: "[../../samRms]<0.4||([channel]>=800&&[../../samRms]<0.8)"

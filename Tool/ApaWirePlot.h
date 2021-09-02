@@ -13,7 +13,7 @@
 
 #include "fhiclcpp/ParameterSet.h"
 #include "art/Utilities/ToolMacros.h"
-#include "dune/DuneCommon/TPadManipulator.h"
+#include "dune/DuneCommon/Utility/TPadManipulator.h"
 #include "TH2F.h"
 #include <string>
 

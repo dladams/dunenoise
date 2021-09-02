@@ -17,12 +17,13 @@
 #   PLOTS - include plots and ranges, e.g. "tai:300,tai-50:200,cnr:300,cnr-50:200"
 #   CRVS - Curves to incude on each plot, e.g. "zcGood-uvGood"
 
-SFRUN=$1
-EVT=$2
-SEL=$3
-SUPFILE=./setupPlots.sh
+OPT=$1    # Noise option specifying the setup file to use
+SFRUN=$2
+EVT=$3
+SEL=$4
+SUPFILE=./setupNoise$OPT.sh
 if [ -z "$SFRUN" ]; then
-  echo Usage: $0 RUN [EVT] [SEL]
+  echo Usage: $0 OPT RUN [EVT] [SEL]
   echo "    or $0 RUN1-RUN2 0 [SEL]"
   echo "  e.g. $0 5240"
   echo "  In/out directories and more taken from $SUPFILE"
@@ -37,7 +38,7 @@ if [ ! -r $SUPFILE ]; then
   echo Please create $SUPFILE
   exit 1
 fi
-source $SUPFILE
+source $SUPFILE $SFRUN
 if [ -n "$ISGROUP" ]; then
   # Strip leading ibgroup if present--TBD
   echo Processing run group $SFRUN

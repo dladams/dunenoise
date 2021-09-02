@@ -26,7 +26,7 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, int nevt, string spatin, 
     pgrmax->GetXaxis()->SetTitle("Run number");
   }
   pgrmax->GetYaxis()->SetTitle("Noise [e]");
-  TLegend* pleg = new TLegend(0.10, 0.70, 0.25, 0.90);
+  TLegend* pleg = new TLegend(0.07, 0.70, 0.30, 0.90);
   pleg->SetBorderSize(0);
   pleg->SetFillStyle(0);
   pleg->SetMargin(0.10);  // Fraction used for symbol
@@ -60,6 +60,7 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, int nevt, string spatin, 
       string scrv;
       double mean, median;
       float valmax = 0.0;
+      int nread = 0;
       while ( fin >> svar >> scrv >> mean >> median ) {
         string::size_type ipos = svar.find("-");
         string svar1 = svar.substr(0, ipos);
@@ -76,10 +77,13 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, int nevt, string spatin, 
             if ( slab.substr(0,2) == "zc" ) slab = "Collection";
             if ( svar1 == "tai" ) slab += " w/o CNR";
             if ( svar1 == "cnr" ) slab += " with CNR";
+            if ( svar1 == "ped" ) slab += " with PUP";
+            if ( svar1 == "pnr" ) slab += " with PUP and CNR";
             if ( scrv[0] == 'z' || scrv['0'] == 'c' ) icol = lc.blue();
             if ( scrv[0] == 'u' || scrv['0'] == 'v' ) icol = lc.red();
             int imrk = 2;
             if ( svar1 == "cnr" ) imrk = 27;
+            if ( svar1 == "pnr" ) imrk = 5;
             pgr->SetMarkerColor(icol);
             pgr->SetMarkerStyle(imrk);
             pleg->AddEntry(pgr, slab.c_str(), "p");
@@ -90,6 +94,11 @@ TPadManipulator* drawNoiseVsTime(int irun1, int irun2, int nevt, string spatin, 
           cout << myname << svar1 << " " << svar2 << " " << scrv << ": " << val << endl;
         }
         if ( valmax > 0.0 ) pgrmax->SetPoint(pgrmax->GetN(), xpt, valmax);
+        ++nread;
+      }  // end loop over lines in the file
+      if ( nread == 0 ) {
+        cout << myname << "ERROR: Summary file is empty: " << sfin << endl;
+        return nullptr;
       }
       //vector<string> svar = "tai-nsgrms50";
     }
